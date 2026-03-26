@@ -1,0 +1,283 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+# ARM64 Atomic Instructions
+
+# ==================== Load-Acquire/Store-Release ====================
+
+# LDAXR (Load-Acquire Exclusive Register)
+- Name: "LDAXR_X_V0"
+  Mnemonic: "LDAXR"
+  Description: "Load-Acquire Exclusive Register (64-bit)"
+  Opcode: "11001000"
+  Format: "LOAD_STORE_EXCLUSIVE"
+  Operands:
+    size: ['3', 'size', '?']
+    L: ['1', 'L', '?']
+    Rs: ['31', 'Rs', '?']
+    Rt2: ['31', 'Rt2', '?']
+
+# STLXR (Store-Release Exclusive Register)
+- Name: "STLXR_X_V0"
+  Mnemonic: "STLXR"
+  Description: "Store-Release Exclusive Register (64-bit)"
+  Opcode: "11001000"
+  Format: "LOAD_STORE_EXCLUSIVE"
+  Operands:
+    size: ['3', 'size', '?']
+    L: ['0', 'L', '?']
+    Rs: ['0', 'Rs', '?']
+    Rt2: ['31', 'Rt2', '?']
+
+# LDXR (Load Exclusive Register)
+- Name: "LDXR_X_V0"
+  Mnemonic: "LDXR"
+  Description: "Load Exclusive Register (64-bit)"
+  Opcode: "11001000"
+  Format: "LOAD_STORE_EXCLUSIVE"
+  Operands:
+    size: ['3', 'size', '?']
+    L: ['1', 'L', '?']
+    Rs: ['31', 'Rs', '?']
+    Rt2: ['31', 'Rt2', '?']
+
+# STXR (Store Exclusive Register)
+- Name: "STXR_X_V0"
+  Mnemonic: "STXR"
+  Description: "Store Exclusive Register (64-bit)"
+  Opcode: "11001000"
+  Format: "LOAD_STORE_EXCLUSIVE"
+  Operands:
+    size: ['3', 'size', '?']
+    L: ['0', 'L', '?']
+    Rs: ['0', 'Rs', '?']
+    Rt2: ['31', 'Rt2', '?']
+
+# ==================== Atomic Memory Operations ====================
+
+# LDADD (Atomic Add)
+- Name: "LDADD_X_V0"
+  Mnemonic: "LDADD"
+  Description: "Atomic Add (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['0', 'opc', '?']
+
+# LDADDA (Atomic Add with Acquire)
+- Name: "LDADDA_X_V0"
+  Mnemonic: "LDADDA"
+  Description: "Atomic Add with Acquire (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['1', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['0', 'opc', '?']
+
+# LDADDL (Atomic Add with Release)
+- Name: "LDADDL_X_V0"
+  Mnemonic: "LDADDL"
+  Description: "Atomic Add with Release (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['1', 'R', '?']
+    opc: ['0', 'opc', '?']
+
+# LDADDAL (Atomic Add with Acquire-Release)
+- Name: "LDADDAL_X_V0"
+  Mnemonic: "LDADDAL"
+  Description: "Atomic Add with Acquire-Release (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['1', 'A', '?']
+    R: ['1', 'R', '?']
+    opc: ['0', 'opc', '?']
+
+# STADD (Atomic Add, Store)
+- Name: "STADD_X_V0"
+  Mnemonic: "STADD"
+  Description: "Atomic Add Store (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['0', 'opc', '?']
+
+# ==================== Compare and Swap ====================
+
+# CAS (Compare and Swap)
+- Name: "CAS_X_V0"
+  Mnemonic: "CAS"
+  Description: "Compare and Swap (64-bit)"
+  Opcode: "00011110"
+  Format: "CAS"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['0', 'opc', '?']
+
+# CASA (Compare and Swap with Acquire)
+- Name: "CASA_X_V0"
+  Mnemonic: "CASA"
+  Description: "Compare and Swap with Acquire (64-bit)"
+  Opcode: "00011110"
+  Format: "CAS"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['1', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['0', 'opc', '?']
+
+# CASL (Compare and Swap with Release)
+- Name: "CASL_X_V0"
+  Mnemonic: "CASL"
+  Description: "Compare and Swap with Release (64-bit)"
+  Opcode: "00011110"
+  Format: "CAS"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['1', 'R', '?']
+    opc: ['0', 'opc', '?']
+
+# CASAL (Compare and Swap with Acquire-Release)
+- Name: "CASAL_X_V0"
+  Mnemonic: "CASAL"
+  Description: "Compare and Swap with Acquire-Release (64-bit)"
+  Opcode: "00011110"
+  Format: "CAS"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['1', 'A', '?']
+    R: ['1', 'R', '?']
+    opc: ['0', 'opc', '?']
+
+# ==================== Swap ====================
+
+# SWP (Swap)
+- Name: "SWP_X_V0"
+  Mnemonic: "SWP"
+  Description: "Swap (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['1', 'opc', '?']
+
+# SWPA (Swap with Acquire)
+- Name: "SWPA_X_V0"
+  Mnemonic: "SWPA"
+  Description: "Swap with Acquire (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['1', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['1', 'opc', '?']
+
+# SWPL (Swap with Release)
+- Name: "SWPL_X_V0"
+  Mnemonic: "SWPL"
+  Description: "Swap with Release (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['1', 'R', '?']
+    opc: ['1', 'opc', '?']
+
+# SWPAL (Swap with Acquire-Release)
+- Name: "SWPAL_X_V0"
+  Mnemonic: "SWPAL"
+  Description: "Swap with Acquire-Release (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['1', 'A', '?']
+    R: ['1', 'R', '?']
+    opc: ['1', 'opc', '?']
+
+# ==================== LDOR, LDAND, LDEOR, LDSET ====================
+
+# LDOR (Atomic OR)
+- Name: "LDOR_X_V0"
+  Mnemonic: "LDOR"
+  Description: "Atomic OR (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['2', 'opc', '?']
+
+# LDAND (Atomic AND)
+- Name: "LDAND_X_V0"
+  Mnemonic: "LDAND"
+  Description: "Atomic AND (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['3', 'opc', '?']
+
+# LDEOR (Atomic Exclusive OR)
+- Name: "LDEOR_X_V0"
+  Mnemonic: "LDEOR"
+  Description: "Atomic Exclusive OR (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['4', 'opc', '?']
+
+# LDSET (Atomic Set bits)
+- Name: "LDSET_X_V0"
+  Mnemonic: "LDSET"
+  Description: "Atomic Set bits (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['5', 'opc', '?']

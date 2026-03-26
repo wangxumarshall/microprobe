@@ -1,0 +1,92 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+# ARM64 Microarchitecture Definition
+
+Name: armv8_common
+Description: ARMv8 Common Microarchitecture
+Elements:
+  # Execution Units
+  - Name: ALU_0
+    Type: integer_alu
+    Latency: 1
+    Throughput: 4
+  
+  - Name: ALU_1
+    Type: integer_alu
+    Latency: 1
+    Throughput: 4
+  
+  - Name: ALU_2
+    Type: integer_alu
+    Latency: 1
+    Throughput: 4
+  
+  - Name: ALU_3
+    Type: integer_alu
+    Latency: 1
+    Throughput: 4
+  
+  - Name: MUL_0
+    Type: integer_mul
+    Latency: 3
+    Throughput: 1
+  
+  - Name: DIV_0
+    Type: integer_div
+    Latency: 20
+    Throughput: 0.05
+  
+  - Name: FPU_0
+    Type: floating_point
+    Latency: 5
+    Throughput: 2
+  
+  - Name: FPU_1
+    Type: floating_point
+    Latency: 5
+    Throughput: 2
+  
+  - Name: LOAD_0
+    Type: load_unit
+    Latency: 4
+    Throughput: 2
+  
+  - Name: STORE_0
+    Type: store_unit
+    Latency: 1
+    Throughput: 1
+  
+  - Name: BRANCH_0
+    Type: branch_unit
+    Latency: 1
+    Throughput: 1
+
+# Cache Hierarchy
+Cache:
+  L1I:
+    Size: 64KB
+    LineSize: 64
+    Associativity: 4
+  
+  L1D:
+    Size: 64KB
+    LineSize: 64
+    Associativity: 4
+  
+  L2:
+    Size: 512KB
+    LineSize: 64
+    Associativity: 8
+
+# Pipeline
+Pipeline:
+  Stages:
+    - Fetch
+    - Decode
+    - Rename
+    - Dispatch
+    - Execute
+    - Writeback
+  
+  Width: 4  # 4-wide decode/issue

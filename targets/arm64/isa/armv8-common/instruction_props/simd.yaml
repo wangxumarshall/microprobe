@@ -1,0 +1,300 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+# ARM64 SIMD/NEON Instructions
+
+# ==================== Vector Arithmetic ====================
+
+# ADD (Vector)
+- Name: "ADD_V_V0"
+  Mnemonic: "ADD"
+  Description: "Vector Add"
+  Opcode: "00101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['0', 'size', '?']
+
+# SUB (Vector)
+- Name: "SUB_V_V0"
+  Mnemonic: "SUB"
+  Description: "Vector Subtract"
+  Opcode: "01101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['0', 'size', '?']
+
+# MUL (Vector)
+- Name: "MUL_V_V0"
+  Mnemonic: "MUL"
+  Description: "Vector Multiply"
+  Opcode: "00101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['1', 'size', '?']
+
+# MLA (Vector)
+- Name: "MLA_V_V0"
+  Mnemonic: "MLA"
+  Description: "Vector Multiply-Accumulate"
+  Opcode: "00101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['2', 'size', '?']
+
+# MLS (Vector)
+- Name: "MLS_V_V0"
+  Mnemonic: "MLS"
+  Description: "Vector Multiply-Subtract"
+  Opcode: "01101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['2', 'size', '?']
+
+# ==================== Vector Logical ====================
+
+# AND (Vector)
+- Name: "AND_V_V0"
+  Mnemonic: "AND"
+  Description: "Vector Bitwise AND"
+  Opcode: "00001110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['0', 'size', '?']
+
+# ORR (Vector)
+- Name: "ORR_V_V0"
+  Mnemonic: "ORR"
+  Description: "Vector Bitwise OR"
+  Opcode: "00001110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['2', 'size', '?']
+
+# EOR (Vector)
+- Name: "EOR_V_V0"
+  Mnemonic: "EOR"
+  Description: "Vector Bitwise Exclusive OR"
+  Opcode: "00101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['1', 'size', '?']
+
+# BIC (Vector)
+- Name: "BIC_V_V0"
+  Mnemonic: "BIC"
+  Description: "Vector Bitwise Bit Clear"
+  Opcode: "00001110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['1', 'U', '?']
+    size: ['0', 'size', '?']
+
+# NOT (Vector)
+- Name: "NOT_V_V0"
+  Mnemonic: "NOT"
+  Description: "Vector Bitwise NOT"
+  Opcode: "00101110"
+  Format: "SIMD_DP_1REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['1', 'U', '?']
+    size: ['0', 'size', '?']
+
+# ==================== Vector Shift ====================
+
+# SHL (Vector)
+- Name: "SHL_V_V0"
+  Mnemonic: "SHL"
+  Description: "Vector Shift Left"
+  Opcode: "00101111"
+  Format: "SIMD_DP_2REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['0', 'size', '?']
+
+# SSHR (Vector)
+- Name: "SSHR_V_V0"
+  Mnemonic: "SSHR"
+  Description: "Vector Signed Shift Right"
+  Opcode: "00101111"
+  Format: "SIMD_DP_2REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['0', 'size', '?']
+
+# USHR (Vector)
+- Name: "USHR_V_V0"
+  Mnemonic: "USHR"
+  Description: "Vector Unsigned Shift Right"
+  Opcode: "00101111"
+  Format: "SIMD_DP_2REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['1', 'U', '?']
+    size: ['0', 'size', '?']
+
+# ==================== Vector Load/Store ====================
+
+# LDR (Vector)
+- Name: "LDR_V_IMM_V0"
+  Mnemonic: "LDR"
+  Description: "Load Vector Register (Immediate offset)"
+  Opcode: "00111100"
+  Format: "LOAD_STORE_IMM"
+  Operands:
+    size: ['3', 'size', '?']
+    opc: ['1', 'opc', '?']
+    V: ['1', 'V', '?']
+    opc2: ['1', 'opc2', '?']
+    opc3: ['1', 'opc3', '?']
+
+# STR (Vector)
+- Name: "STR_V_IMM_V0"
+  Mnemonic: "STR"
+  Description: "Store Vector Register (Immediate offset)"
+  Opcode: "00111100"
+  Format: "LOAD_STORE_IMM"
+  Operands:
+    size: ['3', 'size', '?']
+    opc: ['0', 'opc', '?']
+    V: ['1', 'V', '?']
+    opc2: ['1', 'opc2', '?']
+    opc3: ['1', 'opc3', '?']
+
+# LDP (Vector)
+- Name: "LDP_V_V0"
+  Mnemonic: "LDP"
+  Description: "Load Pair of Vector Registers"
+  Opcode: "10101100"
+  Format: "LOAD_STORE_PAIR"
+  Operands:
+    L: ['1', 'L', '?']
+
+# STP (Vector)
+- Name: "STP_V_V0"
+  Mnemonic: "STP"
+  Description: "Store Pair of Vector Registers"
+  Opcode: "10101100"
+  Format: "LOAD_STORE_PAIR"
+  Operands:
+    L: ['0', 'L', '?']
+
+# LD1 (Vector, multiple structures)
+- Name: "LD1_V_V0"
+  Mnemonic: "LD1"
+  Description: "Load multiple 1-element structures"
+  Opcode: "00101100"
+  Format: "LOAD_STORE_REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    L: ['1', 'L', '?']
+
+# ST1 (Vector, multiple structures)
+- Name: "ST1_V_V0"
+  Mnemonic: "ST1"
+  Description: "Store multiple 1-element structures"
+  Opcode: "00101100"
+  Format: "LOAD_STORE_REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    L: ['0', 'L', '?']
+
+# ==================== Vector Compare ====================
+
+# CMEQ (Vector)
+- Name: "CMEQ_V_V0"
+  Mnemonic: "CMEQ"
+  Description: "Vector Compare Equal"
+  Opcode: "00101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['1', 'U', '?']
+    size: ['3', 'size', '?']
+
+# CMGT (Vector)
+- Name: "CMGT_V_V0"
+  Mnemonic: "CMGT"
+  Description: "Vector Compare Greater Than"
+  Opcode: "00101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['3', 'size', '?']
+
+# CMGE (Vector)
+- Name: "CMGE_V_V0"
+  Mnemonic: "CMGE"
+  Description: "Vector Compare Greater Than or Equal"
+  Opcode: "00101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['3', 'size', '?']
+
+# CMHI (Vector)
+- Name: "CMHI_V_V0"
+  Mnemonic: "CMHI"
+  Description: "Vector Compare Higher (Unsigned)"
+  Opcode: "00101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['1', 'U', '?']
+    size: ['3', 'size', '?']
+
+# CMHS (Vector)
+- Name: "CMHS_V_V0"
+  Mnemonic: "CMHS"
+  Description: "Vector Compare Higher or Same (Unsigned)"
+  Opcode: "00101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['1', 'U', '?']
+    size: ['3', 'size', '?']
+
+# ==================== Vector Duplicate ====================
+
+# DUP (Vector, from general register)
+- Name: "DUP_V_GPR_V0"
+  Mnemonic: "DUP"
+  Description: "Duplicate general register to vector"
+  Opcode: "00101100"
+  Format: "SIMD_DP_1REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['0', 'size', '?']
+
+# DUP (Vector, from vector element)
+- Name: "DUP_V_ELEM_V0"
+  Mnemonic: "DUP"
+  Description: "Duplicate vector element"
+  Opcode: "00101100"
+  Format: "SIMD_DP_1REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['0', 'size', '?']

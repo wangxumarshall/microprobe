@@ -1,0 +1,381 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+# ARM64 Floating Point Instructions
+
+# ==================== Floating Point Data Processing ====================
+
+# FADD (Scalar)
+- Name: "FADD_D_V0"
+  Mnemonic: "FADD"
+  Description: "Floating-point Add (Double precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_2REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['0', 'opc', '?']
+
+- Name: "FADD_S_V0"
+  Mnemonic: "FADD"
+  Description: "Floating-point Add (Single precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_2REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['0', 'opc', '?']
+
+# FSUB (Scalar)
+- Name: "FSUB_D_V0"
+  Mnemonic: "FSUB"
+  Description: "Floating-point Subtract (Double precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_2REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['1', 'opc', '?']
+
+- Name: "FSUB_S_V0"
+  Mnemonic: "FSUB"
+  Description: "Floating-point Subtract (Single precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_2REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['1', 'opc', '?']
+
+# FMUL (Scalar)
+- Name: "FMUL_D_V0"
+  Mnemonic: "FMUL"
+  Description: "Floating-point Multiply (Double precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_2REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['2', 'opc', '?']
+
+- Name: "FMUL_S_V0"
+  Mnemonic: "FMUL"
+  Description: "Floating-point Multiply (Single precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_2REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['2', 'opc', '?']
+
+# FDIV (Scalar)
+- Name: "FDIV_D_V0"
+  Mnemonic: "FDIV"
+  Description: "Floating-point Divide (Double precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_2REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['3', 'opc', '?']
+
+- Name: "FDIV_S_V0"
+  Mnemonic: "FDIV"
+  Description: "Floating-point Divide (Single precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_2REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['3', 'opc', '?']
+
+# FMOV (Scalar)
+- Name: "FMOV_D_V0"
+  Mnemonic: "FMOV"
+  Description: "Floating-point Move (Double precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['0', 'opc', '?']
+
+- Name: "FMOV_S_V0"
+  Mnemonic: "FMOV"
+  Description: "Floating-point Move (Single precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['0', 'opc', '?']
+
+# FABS (Scalar)
+- Name: "FABS_D_V0"
+  Mnemonic: "FABS"
+  Description: "Floating-point Absolute (Double precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['1', 'opc', '?']
+
+- Name: "FABS_S_V0"
+  Mnemonic: "FABS"
+  Description: "Floating-point Absolute (Single precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['1', 'opc', '?']
+
+# FNEG (Scalar)
+- Name: "FNEG_D_V0"
+  Mnemonic: "FNEG"
+  Description: "Floating-point Negate (Double precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['2', 'opc', '?']
+
+- Name: "FNEG_S_V0"
+  Mnemonic: "FNEG"
+  Description: "Floating-point Negate (Single precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['2', 'opc', '?']
+
+# FSQRT (Scalar)
+- Name: "FSQRT_D_V0"
+  Mnemonic: "FSQRT"
+  Description: "Floating-point Square Root (Double precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['3', 'opc', '?']
+
+- Name: "FSQRT_S_V0"
+  Mnemonic: "FSQRT"
+  Description: "Floating-point Square Root (Single precision)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['3', 'opc', '?']
+
+# ==================== Floating Point Compare ====================
+
+# FCMP
+- Name: "FCMP_D_V0"
+  Mnemonic: "FCMP"
+  Description: "Floating-point Compare (Double precision)"
+  Opcode: "00011110"
+  Format: "FP_COMPARE"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['0', 'opc', '?']
+  ImplicitOperands:
+    NZCV: ['NZCV', 'O']
+
+- Name: "FCMP_S_V0"
+  Mnemonic: "FCMP"
+  Description: "Floating-point Compare (Single precision)"
+  Opcode: "00011110"
+  Format: "FP_COMPARE"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['0', 'opc', '?']
+  ImplicitOperands:
+    NZCV: ['NZCV', 'O']
+
+# FCMPE
+- Name: "FCMPE_D_V0"
+  Mnemonic: "FCMPE"
+  Description: "Floating-point Compare Quiet (Double precision)"
+  Opcode: "00011110"
+  Format: "FP_COMPARE"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['1', 'opc', '?']
+  ImplicitOperands:
+    NZCV: ['NZCV', 'O']
+
+- Name: "FCMPE_S_V0"
+  Mnemonic: "FCMPE"
+  Description: "Floating-point Compare Quiet (Single precision)"
+  Opcode: "00011110"
+  Format: "FP_COMPARE"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['1', 'opc', '?']
+  ImplicitOperands:
+    NZCV: ['NZCV', 'O']
+
+# ==================== Floating Point Convert ====================
+
+# FCVT (Convert between floating point types)
+- Name: "FCVT_SD_V0"
+  Mnemonic: "FCVT"
+  Description: "Floating-point Convert Single to Double"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['4', 'opc', '?']
+
+- Name: "FCVT_DS_V0"
+  Mnemonic: "FCVT"
+  Description: "Floating-point Convert Double to Single"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['4', 'opc', '?']
+
+# FCVTZS (Convert to integer, signed)
+- Name: "FCVTZS_D_X_V0"
+  Mnemonic: "FCVTZS"
+  Description: "Floating-point Convert to Signed Integer (Double to 64-bit)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['5', 'opc', '?']
+
+- Name: "FCVTZS_S_X_V0"
+  Mnemonic: "FCVTZS"
+  Description: "Floating-point Convert to Signed Integer (Single to 64-bit)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['5', 'opc', '?']
+
+# FCVTZU (Convert to integer, unsigned)
+- Name: "FCVTZU_D_X_V0"
+  Mnemonic: "FCVTZU"
+  Description: "Floating-point Convert to Unsigned Integer (Double to 64-bit)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['6', 'opc', '?']
+
+- Name: "FCVTZU_S_X_V0"
+  Mnemonic: "FCVTZU"
+  Description: "Floating-point Convert to Unsigned Integer (Single to 64-bit)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['6', 'opc', '?']
+
+# SCVTF (Convert integer to floating point, signed)
+- Name: "SCVTF_X_D_V0"
+  Mnemonic: "SCVTF"
+  Description: "Signed Integer Convert to Floating-point (64-bit to Double)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['7', 'opc', '?']
+
+- Name: "SCVTF_X_S_V0"
+  Mnemonic: "SCVTF"
+  Description: "Signed Integer Convert to Floating-point (64-bit to Single)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['7', 'opc', '?']
+
+# UCVTF (Convert integer to floating point, unsigned)
+- Name: "UCVTF_X_D_V0"
+  Mnemonic: "UCVTF"
+  Description: "Unsigned Integer Convert to Floating-point (64-bit to Double)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['8', 'opc', '?']
+
+- Name: "UCVTF_X_S_V0"
+  Mnemonic: "UCVTF"
+  Description: "Unsigned Integer Convert to Floating-point (64-bit to Single)"
+  Opcode: "00011110"
+  Format: "FP_DP_1REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['8', 'opc', '?']
+
+# ==================== Floating Point Multiply-Add ====================
+
+# FMADD
+- Name: "FMADD_D_V0"
+  Mnemonic: "FMADD"
+  Description: "Floating-point Multiply-Add (Double precision)"
+  Opcode: "00011111"
+  Format: "DP_3REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['0', 'opc', '?']
+
+- Name: "FMADD_S_V0"
+  Mnemonic: "FMADD"
+  Description: "Floating-point Multiply-Add (Single precision)"
+  Opcode: "00011111"
+  Format: "DP_3REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['0', 'opc', '?']
+
+# FMSUB
+- Name: "FMSUB_D_V0"
+  Mnemonic: "FMSUB"
+  Description: "Floating-point Multiply-Subtract (Double precision)"
+  Opcode: "00011111"
+  Format: "DP_3REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['1', 'opc', '?']
+
+- Name: "FMSUB_S_V0"
+  Mnemonic: "FMSUB"
+  Description: "Floating-point Multiply-Subtract (Single precision)"
+  Opcode: "00011111"
+  Format: "DP_3REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['1', 'opc', '?']
+
+# FNMADD
+- Name: "FNMADD_D_V0"
+  Mnemonic: "FNMADD"
+  Description: "Floating-point Negate Multiply-Add (Double precision)"
+  Opcode: "00011111"
+  Format: "DP_3REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['2', 'opc', '?']
+
+- Name: "FNMADD_S_V0"
+  Mnemonic: "FNMADD"
+  Description: "Floating-point Negate Multiply-Add (Single precision)"
+  Opcode: "00011111"
+  Format: "DP_3REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['2', 'opc', '?']
+
+# FNMSUB
+- Name: "FNMSUB_D_V0"
+  Mnemonic: "FNMSUB"
+  Description: "Floating-point Negate Multiply-Subtract (Double precision)"
+  Opcode: "00011111"
+  Format: "DP_3REG"
+  Operands:
+    type: ['1', 'type', '?']
+    opc: ['3', 'opc', '?']
+
+- Name: "FNMSUB_S_V0"
+  Mnemonic: "FNMSUB"
+  Description: "Floating-point Negate Multiply-Subtract (Single precision)"
+  Opcode: "00011111"
+  Format: "DP_3REG"
+  Operands:
+    type: ['0', 'type', '?']
+    opc: ['3', 'opc', '?']

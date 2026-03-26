@@ -1,0 +1,249 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+# ARM64 System Instructions
+
+# ==================== System Register Access ====================
+
+# MRS (Move System Register)
+- Name: "MRS_X_V0"
+  Mnemonic: "MRS"
+  Description: "Move System Register to General Register"
+  Opcode: "110101010011"
+  Format: "SYSTEM_REG"
+  Operands:
+    opc: ['0', 'opc', '?']
+
+# MSR (Move to System Register)
+- Name: "MSR_X_V0"
+  Mnemonic: "MSR"
+  Description: "Move General Register to System Register"
+  Opcode: "110101010001"
+  Format: "SYSTEM_REG"
+  Operands:
+    opc: ['1', 'opc', '?']
+
+# ==================== Exception Generation ====================
+
+# SVC (Supervisor Call)
+- Name: "SVC_V0"
+  Mnemonic: "SVC"
+  Description: "Supervisor Call"
+  Opcode: "11010100000"
+  Format: "EXCEPTION"
+  Operands:
+    opc: ['0', 'opc', '?']
+    opc2: ['0', 'opc2', '?']
+
+# HVC (Hypervisor Call)
+- Name: "HVC_V0"
+  Mnemonic: "HVC"
+  Description: "Hypervisor Call"
+  Opcode: "11010100000"
+  Format: "EXCEPTION"
+  Operands:
+    opc: ['0', 'opc', '?']
+    opc2: ['2', 'opc2', '?']
+
+# SMC (Secure Monitor Call)
+- Name: "SMC_V0"
+  Mnemonic: "SMC"
+  Description: "Secure Monitor Call"
+  Opcode: "11010100000"
+  Format: "EXCEPTION"
+  Operands:
+    opc: ['0', 'opc', '?']
+    opc2: ['3', 'opc2', '?']
+
+# BRK (Breakpoint)
+- Name: "BRK_V0"
+  Mnemonic: "BRK"
+  Description: "Breakpoint Instruction"
+  Opcode: "11010100001"
+  Format: "EXCEPTION"
+  Operands:
+    opc: ['0', 'opc', '?']
+    opc2: ['0', 'opc2', '?']
+
+# HLT (Halt)
+- Name: "HLT_V0"
+  Mnemonic: "HLT"
+  Description: "Halt Instruction"
+  Opcode: "11010100010"
+  Format: "EXCEPTION"
+  Operands:
+    opc: ['0', 'opc', '?']
+    opc2: ['0', 'opc2', '?']
+
+# ==================== Memory Barriers ====================
+
+# DMB (Data Memory Barrier)
+- Name: "DMB_V0"
+  Mnemonic: "DMB"
+  Description: "Data Memory Barrier"
+  Opcode: "1101010100"
+  Format: "BARRIER"
+  Operands:
+    CRm: ['3', 'CRm', '?']
+    op2: ['5', 'op2', '?']
+
+# DSB (Data Synchronization Barrier)
+- Name: "DSB_V0"
+  Mnemonic: "DSB"
+  Description: "Data Synchronization Barrier"
+  Opcode: "1101010100"
+  Format: "BARRIER"
+  Operands:
+    CRm: ['3', 'CRm', '?']
+    op2: ['4', 'op2', '?']
+
+# ISB (Instruction Synchronization Barrier)
+- Name: "ISB_V0"
+  Mnemonic: "ISB"
+  Description: "Instruction Synchronization Barrier"
+  Opcode: "1101010100"
+  Format: "BARRIER"
+  Operands:
+    CRm: ['15', 'CRm', '?']
+    op2: ['6', 'op2', '?']
+
+# ==================== Cache Maintenance ====================
+
+# IC (Instruction Cache)
+- Name: "IC_V0"
+  Mnemonic: "IC"
+  Description: "Instruction Cache Maintenance"
+  Opcode: "1101010100"
+  Format: "CACHE"
+  Operands:
+    op1: ['0', 'op1', '?']
+    CRm: ['0', 'CRm', '?']
+    op2: ['0', 'op2', '?']
+
+# DC (Data Cache)
+- Name: "DC_V0"
+  Mnemonic: "DC"
+  Description: "Data Cache Maintenance"
+  Opcode: "1101010100"
+  Format: "CACHE"
+  Operands:
+    op1: ['0', 'op1', '?']
+    CRm: ['0', 'CRm', '?']
+    op2: ['0', 'op2', '?']
+
+# ==================== TLB Maintenance ====================
+
+# TLBI (TLB Invalidate)
+- Name: "TLBI_V0"
+  Mnemonic: "TLBI"
+  Description: "TLB Invalidate"
+  Opcode: "1101010100"
+  Format: "TLB"
+  Operands:
+    op1: ['0', 'op1', '?']
+    CRm: ['0', 'CRm', '?']
+    op2: ['0', 'op2', '?']
+
+# ==================== Hint Instructions ====================
+
+# NOP (No Operation)
+- Name: "NOP_V0"
+  Mnemonic: "NOP"
+  Description: "No Operation"
+  Opcode: "1101010100"
+  Format: "HINT"
+  Operands:
+    CRm: ['0', 'CRm', '?']
+    op2: ['0', 'op2', '?']
+
+# YIELD (Yield)
+- Name: "YIELD_V0"
+  Mnemonic: "YIELD"
+  Description: "Yield"
+  Opcode: "1101010100"
+  Format: "HINT"
+  Operands:
+    CRm: ['0', 'CRm', '?']
+    op2: ['1', 'op2', '?']
+
+# WFE (Wait For Event)
+- Name: "WFE_V0"
+  Mnemonic: "WFE"
+  Description: "Wait For Event"
+  Opcode: "1101010100"
+  Format: "HINT"
+  Operands:
+    CRm: ['0', 'CRm', '?']
+    op2: ['2', 'op2', '?']
+
+# WFI (Wait For Interrupt)
+- Name: "WFI_V0"
+  Mnemonic: "WFI"
+  Description: "Wait For Interrupt"
+  Opcode: "1101010100"
+  Format: "HINT"
+  Operands:
+    CRm: ['0', 'CRm', '?']
+    op2: ['3', 'op2', '?']
+
+# SEV (Send Event)
+- Name: "SEV_V0"
+  Mnemonic: "SEV"
+  Description: "Send Event"
+  Opcode: "1101010100"
+  Format: "HINT"
+  Operands:
+    CRm: ['0', 'CRm', '?']
+    op2: ['4', 'op2', '?']
+
+# SEVL (Send Event Local)
+- Name: "SEVL_V0"
+  Mnemonic: "SEVL"
+  Description: "Send Event Local"
+  Opcode: "1101010100"
+  Format: "HINT"
+  Operands:
+    CRm: ['0', 'CRm', '?']
+    op2: ['5', 'op2', '?']
+
+# ==================== Prefetch ====================
+
+# PRFM (Prefetch Memory)
+- Name: "PRFM_V0"
+  Mnemonic: "PRFM"
+  Description: "Prefetch Memory"
+  Opcode: "11111001"
+  Format: "PREFETCH"
+  Operands:
+    size: ['3', 'size', '?']
+    opc: ['2', 'opc', '?']
+
+# ==================== System Control ====================
+
+# ERET (Exception Return)
+- Name: "ERET_V0"
+  Mnemonic: "ERET"
+  Description: "Exception Return"
+  Opcode: "1101011010"
+  Format: "SYSTEM"
+
+# ERETAA (Exception Return with Pointer Authentication)
+- Name: "ERETAA_V0"
+  Mnemonic: "ERETAA"
+  Description: "Exception Return with Pointer Authentication (A key)"
+  Opcode: "1101011010"
+  Format: "SYSTEM"
+
+# ERETAB (Exception Return with Pointer Authentication)
+- Name: "ERETAB_V0"
+  Mnemonic: "ERETAB"
+  Description: "Exception Return with Pointer Authentication (B key)"
+  Opcode: "1101011010"
+  Format: "SYSTEM"
+
+# DRPS (Debug Return from Power State)
+- Name: "DRPS_V0"
+  Mnemonic: "DRPS"
+  Description: "Debug Return from Power State"
+  Opcode: "1101011010"
+  Format: "SYSTEM"
