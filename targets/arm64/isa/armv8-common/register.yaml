@@ -1,0 +1,146 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+# Zero Register
+- Name: XZR
+  Type: GPR64
+  Representation: 'xzr'
+  Codification: '31'
+  Description: Zero Register (64-bit)
+
+- Name: WZR
+  Type: GPR32
+  Representation: 'wzr'
+  Codification: '31'
+  Description: Zero Register (32-bit)
+
+# Stack Pointer
+- Name: SP
+  Type: SPR
+  Representation: 'sp'
+  Description: Stack Pointer
+
+# General Purpose Registers (64-bit)
+- Name: X0
+  Type: GPR64
+  Representation: 'x0'
+  Codification: '0'
+  Description: General Purpose Register 0 (64-bit)
+  Repeat:
+    From: 0
+    To: 30
+
+# General Purpose Registers (32-bit view)
+- Name: W0
+  Type: GPR32
+  Representation: 'w0'
+  Codification: '0'
+  Description: General Purpose Register 0 (32-bit)
+  Repeat:
+    From: 0
+    To: 30
+
+# SIMD/Floating Point Registers (128-bit)
+- Name: V0
+  Type: SIMD_FP
+  Representation: 'v0'
+  Codification: '0'
+  Description: SIMD/Floating Point Register 0
+  Repeat:
+    From: 0
+    To: 31
+
+# 64-bit view of SIMD registers (D registers)
+- Name: D0
+  Type: SIMD_FP
+  Representation: 'd0'
+  Codification: '0'
+  Description: Double Precision Register 0
+  Repeat:
+    From: 0
+    To: 31
+
+# 32-bit view of SIMD registers (S registers)
+- Name: S0
+  Type: SIMD_FP
+  Representation: 's0'
+  Codification: '0'
+  Description: Single Precision Register 0
+  Repeat:
+    From: 0
+    To: 31
+
+# Program Counter
+- Name: PC
+  Type: SPR
+  Representation: 'pc'
+  Description: Program Counter
+
+# Special Registers
+- Name: LR
+  Type: GPR64
+  Representation: 'x30'
+  Codification: '30'
+  Description: Link Register (X30)
+
+- Name: FP
+  Type: GPR64
+  Representation: 'x29'
+  Codification: '29'
+  Description: Frame Pointer (X29)
+
+# System Registers
+- Name: NZCV
+  Type: Condition
+  Representation: 'nzcv'
+  Description: Condition Flags
+
+- Name: FPCR
+  Type: SystemReg
+  Representation: 'fpcr'
+  Description: Floating-Point Control Register
+
+- Name: FPSR
+  Type: SystemReg
+  Representation: 'fpsr'
+  Description: Floating-Point Status Register
+
+- Name: SPSR_EL1
+  Type: SystemReg
+  Representation: 'spsr_el1'
+  Description: Saved Program Status Register (EL1)
+
+- Name: ELR_EL1
+  Type: SystemReg
+  Representation: 'elr_el1'
+  Description: Exception Link Register (EL1)
+
+- Name: SPSR_EL2
+  Type: SystemReg
+  Representation: 'spsr_el2'
+  Description: Saved Program Status Register (EL2)
+
+- Name: ELR_EL2
+  Type: SystemReg
+  Representation: 'elr_el2'
+  Description: Exception Link Register (EL2)
+
+- Name: SPSR_EL3
+  Type: SystemReg
+  Representation: 'spsr_el3'
+  Description: Saved Program Status Register (EL3)
+
+- Name: ELR_EL3
+  Type: SystemReg
+  Representation: 'elr_el3'
+  Description: Exception Link Register (EL3)
+
+- Name: CurrentEL
+  Type: SystemReg
+  Representation: 'currentel'
+  Description: Current Exception Level
+
+- Name: DAIF
+  Type: SystemReg
+  Representation: 'daif'
+  Description: Interrupt Mask Bits

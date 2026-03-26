@@ -1,0 +1,34 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+Name: armv8_common
+Description: ARMv8 Common ISA
+ISA:
+  Class: Arm64ISA
+  Module: ./isa.py
+Instruction_format:
+  Class: Arm64InstructionFormat
+  Module: ./instruction_format.py
+  YAML: ./instruction_format.yaml
+Instruction_field:
+  Class: Arm64InstructionField
+  Module: ./instruction_field.py
+  YAML: ./instruction_field.yaml
+Instruction:
+  Class: Arm64Instruction
+  Module: ./instruction.py
+  YAML: ./instruction.yaml
+Register:
+  Class: Arm64Register
+  Module: ./register.py
+  YAML: ./register.yaml
+Register_type:
+  Class: Arm64RegisterType
+  Module: ./register_type.py
+  YAML: ./register_type.yaml
+Operand:
+  YAML: ./operand.yaml
+Comparator:
+  Modules: ./comparator.py
+Generator:
+  Modules: ./generator.py

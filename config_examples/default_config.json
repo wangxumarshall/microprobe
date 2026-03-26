@@ -1,0 +1,100 @@
+{
+  "sequence_length_min": 10,
+  "sequence_length_max": 100,
+  "num_sequences": 1000,
+  "mutation_rate": 0.3,
+  "num_mutants_per_base": 10,
+  "sdc_detection": [
+    "checksum",
+    "redundant",
+    "boundary",
+    "canary"
+  ],
+  "parallel_workers": 8,
+  "batch_size": 100,
+  "compress_output": true,
+  "seed": null,
+  
+  "generation_strategies": {
+    "random_combination": {
+      "enabled": true,
+      "weight": 0.25
+    },
+    "category_based": {
+      "enabled": true,
+      "weight": 0.25,
+      "categories": [
+        "arithmetic",
+        "logical",
+        "memory",
+        "branch",
+        "floating",
+        "simd"
+      ]
+    },
+    "risk_based": {
+      "enabled": true,
+      "weight": 0.25,
+      "risk_levels": ["low", "medium", "high"]
+    },
+    "pattern_based": {
+      "enabled": true,
+      "weight": 0.25,
+      "patterns": [
+        "memory_intensive",
+        "compute_intensive",
+        "branch_heavy",
+        "mixed"
+      ]
+    }
+  },
+  
+  "mutation_strategies": {
+    "replace": {
+      "enabled": true,
+      "probability": 0.2
+    },
+    "insert": {
+      "enabled": true,
+      "probability": 0.2
+    },
+    "delete": {
+      "enabled": true,
+      "probability": 0.15
+    },
+    "swap": {
+      "enabled": true,
+      "probability": 0.15
+    },
+    "duplicate": {
+      "enabled": true,
+      "probability": 0.15
+    },
+    "reverse": {
+      "enabled": true,
+      "probability": 0.15
+    }
+  },
+  
+  "sdc_detection_config": {
+    "checksum": {
+      "enabled": true,
+      "algorithm": "crc32",
+      "check_interval": 100
+    },
+    "redundant": {
+      "enabled": true,
+      "compare_method": "exact"
+    },
+    "boundary": {
+      "enabled": true,
+      "min_value": 0,
+      "max_value": "UINT64_MAX"
+    },
+    "canary": {
+      "enabled": true,
+      "canary_value": "0xDEADBEEFCAFEBABE",
+      "positions": ["stack", "heap"]
+    }
+  }
+}

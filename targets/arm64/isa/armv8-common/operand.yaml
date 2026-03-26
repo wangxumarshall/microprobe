@@ -1,0 +1,283 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+# ARM64 Operands
+
+# Register Operands
+
+- Name: GPR64_regs
+  Description: 64-bit General Purpose Registers
+  Registers:
+    X0 : ['X0']
+    X1 : ['X1']
+    X2 : ['X2']
+    X3 : ['X3']
+    X4 : ['X4']
+    X5 : ['X5']
+    X6 : ['X6']
+    X7 : ['X7']
+    X8 : ['X8']
+    X9 : ['X9']
+    X10 : ['X10']
+    X11 : ['X11']
+    X12 : ['X12']
+    X13 : ['X13']
+    X14 : ['X14']
+    X15 : ['X15']
+    X16 : ['X16']
+    X17 : ['X17']
+    X18 : ['X18']
+    X19 : ['X19']
+    X20 : ['X20']
+    X21 : ['X21']
+    X22 : ['X22']
+    X23 : ['X23']
+    X24 : ['X24']
+    X25 : ['X25']
+    X26 : ['X26']
+    X27 : ['X27']
+    X28 : ['X28']
+    X29 : ['X29']
+    X30 : ['X30']
+
+- Name: GPR32_regs
+  Description: 32-bit General Purpose Registers
+  Registers:
+    W0 : ['W0']
+    W1 : ['W1']
+    W2 : ['W2']
+    W3 : ['W3']
+    W4 : ['W4']
+    W5 : ['W5']
+    W6 : ['W6']
+    W7 : ['W7']
+    W8 : ['W8']
+    W9 : ['W9']
+    W10 : ['W10']
+    W11 : ['W11']
+    W12 : ['W12']
+    W13 : ['W13']
+    W14 : ['W14']
+    W15 : ['W15']
+    W16 : ['W16']
+    W17 : ['W17']
+    W18 : ['W18']
+    W19 : ['W19']
+    W20 : ['W20']
+    W21 : ['W21']
+    W22 : ['W22']
+    W23 : ['W23']
+    W24 : ['W24']
+    W25 : ['W25']
+    W26 : ['W26']
+    W27 : ['W27']
+    W28 : ['W28']
+    W29 : ['W29']
+    W30 : ['W30']
+
+- Name: SIMD_FP_regs
+  Description: SIMD/Floating Point Registers
+  Registers:
+    V0 : ['V0']
+    V1 : ['V1']
+    V2 : ['V2']
+    V3 : ['V3']
+    V4 : ['V4']
+    V5 : ['V5']
+    V6 : ['V6']
+    V7 : ['V7']
+    V8 : ['V8']
+    V9 : ['V9']
+    V10 : ['V10']
+    V11 : ['V11']
+    V12 : ['V12']
+    V13 : ['V13']
+    V14 : ['V14']
+    V15 : ['V15']
+    V16 : ['V16']
+    V17 : ['V17']
+    V18 : ['V18']
+    V19 : ['V19']
+    V20 : ['V20']
+    V21 : ['V21']
+    V22 : ['V22']
+    V23 : ['V23']
+    V24 : ['V24']
+    V25 : ['V25']
+    V26 : ['V26']
+    V27 : ['V27']
+    V28 : ['V28']
+    V29 : ['V29']
+    V30 : ['V30']
+    V31 : ['V31']
+
+- Name: D_regs
+  Description: Double Precision Registers
+  Registers:
+    D0 : ['D0']
+    D1 : ['D1']
+    D2 : ['D2']
+    D3 : ['D3']
+    D4 : ['D4']
+    D5 : ['D5']
+    D6 : ['D6']
+    D7 : ['D7']
+    D8 : ['D8']
+    D9 : ['D9']
+    D10 : ['D10']
+    D11 : ['D11']
+    D12 : ['D12']
+    D13 : ['D13']
+    D14 : ['D14']
+    D15 : ['D15']
+    D16 : ['D16']
+    D17 : ['D17']
+    D18 : ['D18']
+    D19 : ['D19']
+    D20 : ['D20']
+    D21 : ['D21']
+    D22 : ['D22']
+    D23 : ['D23']
+    D24 : ['D24']
+    D25 : ['D25']
+    D26 : ['D26']
+    D27 : ['D27']
+    D28 : ['D28']
+    D29 : ['D29']
+    D30 : ['D30']
+    D31 : ['D31']
+
+- Name: S_regs
+  Description: Single Precision Registers
+  Registers:
+    S0 : ['S0']
+    S1 : ['S1']
+    S2 : ['S2']
+    S3 : ['S3']
+    S4 : ['S4']
+    S5 : ['S5']
+    S6 : ['S6']
+    S7 : ['S7']
+    S8 : ['S8']
+    S9 : ['S9']
+    S10 : ['S10']
+    S11 : ['S11']
+    S12 : ['S12']
+    S13 : ['S13']
+    S14 : ['S14']
+    S15 : ['S15']
+    S16 : ['S16']
+    S17 : ['S17']
+    S18 : ['S18']
+    S19 : ['S19']
+    S20 : ['S20']
+    S21 : ['S21']
+    S22 : ['S22']
+    S23 : ['S23']
+    S24 : ['S24']
+    S25 : ['S25']
+    S26 : ['S26']
+    S27 : ['S27']
+    S28 : ['S28']
+    S29 : ['S29']
+    S30 : ['S30']
+    S31 : ['S31']
+
+# Immediate Operands
+
+- Name: u.imm5
+  Description: Unsigned 5-bit Immediate
+  Min: 0
+  Max: 31
+
+- Name: u.imm6
+  Description: Unsigned 6-bit Immediate
+  Min: 0
+  Max: 63
+
+- Name: u.imm12
+  Description: Unsigned 12-bit Immediate
+  Min: 0
+  Max: 4095
+
+- Name: u.imm16
+  Description: Unsigned 16-bit Immediate
+  Min: 0
+  Max: 65535
+
+- Name: s.imm7
+  Description: Signed 7-bit Immediate
+  Min: -64
+  Max: 63
+
+- Name: s.imm9
+  Description: Signed 9-bit Immediate
+  Min: -256
+  Max: 255
+
+- Name: s.imm14_shift2
+  Description: Signed 14-bit Immediate (shifted left 2)
+  Min: -16384
+  Max: 16382
+  Shift: 2
+  Relative: True
+
+- Name: s.imm19_shift2
+  Description: Signed 19-bit Immediate (shifted left 2)
+  Min: -262144
+  Max: 262142
+  Shift: 2
+  Relative: True
+
+- Name: s.imm26_shift2
+  Description: Signed 26-bit Immediate (shifted left 2)
+  Min: -33554432
+  Max: 33554430
+  Shift: 2
+  Relative: True
+
+# Condition Codes
+
+- Name: condition_codes
+  Description: Condition Codes
+  Values:
+  - 0   # EQ (Equal)
+  - 1   # NE (Not Equal)
+  - 2   # CS/HS (Carry Set/Unsigned Higher or Same)
+  - 3   # CC/LO (Carry Clear/Unsigned Lower)
+  - 4   # MI (Minus/Negative)
+  - 5   # PL (Plus/Positive or Zero)
+  - 6   # VS (Overflow)
+  - 7   # VC (No Overflow)
+  - 8   # HI (Unsigned Higher)
+  - 9   # LS (Unsigned Lower or Same)
+  - 10  # GE (Signed Greater or Equal)
+  - 11  # LT (Signed Less Than)
+  - 12  # GT (Signed Greater Than)
+  - 13  # LE (Signed Less or Equal)
+  - 14  # AL (Always)
+  - 15  # NV (Never)
+
+# Shift Types
+
+- Name: shift_types
+  Description: Shift Types
+  Values:
+  - 0  # LSL (Logical Shift Left)
+  - 1  # LSR (Logical Shift Right)
+  - 2  # ASR (Arithmetic Shift Right)
+  - 3  # ROR (Rotate Right)
+
+# Extend Types
+
+- Name: extend_types
+  Description: Extend Types
+  Values:
+  - 0  # UXTB (Unsigned Extend Byte)
+  - 1  # UXTH (Unsigned Extend Halfword)
+  - 2  # UXTW (Unsigned Extend Word)
+  - 3  # UXTX (Unsigned Extend Doubleword)
+  - 4  # SXTB (Signed Extend Byte)
+  - 5  # SXTH (Signed Extend Halfword)
+  - 6  # SXTW (Signed Extend Word)
+  - 7  # SXTX (Signed Extend Doubleword)

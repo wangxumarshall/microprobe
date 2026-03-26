@@ -1,0 +1,618 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+# ARM64 Core Instructions
+
+# ==================== Data Processing - Immediate ====================
+
+# ADD (Immediate)
+- Name: "ADD_X_IMM_V0"
+  Mnemonic: "ADD"
+  Description: "Add (64-bit, immediate)"
+  Opcode: "1000"
+  Format: "ADD_SUB_IMM"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['0', 'opc', '?']
+    S: ['0', 'S', '?']
+    shift: ['0', 'shift', '?']
+
+- Name: "ADD_W_IMM_V0"
+  Mnemonic: "ADD"
+  Description: "Add (32-bit, immediate)"
+  Opcode: "0000"
+  Format: "ADD_SUB_IMM"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['0', 'opc', '?']
+    S: ['0', 'S', '?']
+    shift: ['0', 'shift', '?']
+
+# ADDS (Immediate, set flags)
+- Name: "ADDS_X_IMM_V0"
+  Mnemonic: "ADDS"
+  Description: "Add and Set Flags (64-bit, immediate)"
+  Opcode: "1000"
+  Format: "ADD_SUB_IMM"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['0', 'opc', '?']
+    S: ['1', 'S', '?']
+    shift: ['0', 'shift', '?']
+  ImplicitOperands:
+    NZCV: ['NZCV', 'O']
+
+- Name: "ADDS_W_IMM_V0"
+  Mnemonic: "ADDS"
+  Description: "Add and Set Flags (32-bit, immediate)"
+  Opcode: "0000"
+  Format: "ADD_SUB_IMM"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['0', 'opc', '?']
+    S: ['1', 'S', '?']
+    shift: ['0', 'shift', '?']
+  ImplicitOperands:
+    NZCV: ['NZCV', 'O']
+
+# SUB (Immediate)
+- Name: "SUB_X_IMM_V0"
+  Mnemonic: "SUB"
+  Description: "Subtract (64-bit, immediate)"
+  Opcode: "1010"
+  Format: "ADD_SUB_IMM"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['2', 'opc', '?']
+    S: ['0', 'S', '?']
+    shift: ['0', 'shift', '?']
+
+- Name: "SUB_W_IMM_V0"
+  Mnemonic: "SUB"
+  Description: "Subtract (32-bit, immediate)"
+  Opcode: "0010"
+  Format: "ADD_SUB_IMM"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['2', 'opc', '?']
+    S: ['0', 'S', '?']
+    shift: ['0', 'shift', '?']
+
+# SUBS (Immediate, set flags)
+- Name: "SUBS_X_IMM_V0"
+  Mnemonic: "SUBS"
+  Description: "Subtract and Set Flags (64-bit, immediate)"
+  Opcode: "1010"
+  Format: "ADD_SUB_IMM"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['2', 'opc', '?']
+    S: ['1', 'S', '?']
+    shift: ['0', 'shift', '?']
+  ImplicitOperands:
+    NZCV: ['NZCV', 'O']
+
+- Name: "SUBS_W_IMM_V0"
+  Mnemonic: "SUBS"
+  Description: "Subtract and Set Flags (32-bit, immediate)"
+  Opcode: "0010"
+  Format: "ADD_SUB_IMM"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['2', 'opc', '?']
+    S: ['1', 'S', '?']
+    shift: ['0', 'shift', '?']
+  ImplicitOperands:
+    NZCV: ['NZCV', 'O']
+
+# MOV (wide immediate)
+- Name: "MOVZ_X_V0"
+  Mnemonic: "MOVZ"
+  Description: "Move Wide with Zero (64-bit)"
+  Opcode: "1010"
+  Format: "MOVE_WIDE"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['2', 'opc', '?']
+    hw: ['0', 'hw', '?']
+
+- Name: "MOVZ_W_V0"
+  Mnemonic: "MOVZ"
+  Description: "Move Wide with Zero (32-bit)"
+  Opcode: "0010"
+  Format: "MOVE_WIDE"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['2', 'opc', '?']
+    hw: ['0', 'hw', '?']
+
+- Name: "MOVK_X_V0"
+  Mnemonic: "MOVK"
+  Description: "Move Wide with Keep (64-bit)"
+  Opcode: "1011"
+  Format: "MOVE_WIDE"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['3', 'opc', '?']
+    hw: ['0', 'hw', '?']
+
+- Name: "MOVK_W_V0"
+  Mnemonic: "MOVK"
+  Description: "Move Wide with Keep (32-bit)"
+  Opcode: "0011"
+  Format: "MOVE_WIDE"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['3', 'opc', '?']
+    hw: ['0', 'hw', '?']
+
+- Name: "MOVN_X_V0"
+  Mnemonic: "MOVN"
+  Description: "Move Wide with NOT (64-bit)"
+  Opcode: "1000"
+  Format: "MOVE_WIDE"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['0', 'opc', '?']
+    hw: ['0', 'hw', '?']
+
+- Name: "MOVN_W_V0"
+  Mnemonic: "MOVN"
+  Description: "Move Wide with NOT (32-bit)"
+  Opcode: "0000"
+  Format: "MOVE_WIDE"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['0', 'opc', '?']
+    hw: ['0', 'hw', '?']
+
+# ==================== Data Processing - Register ====================
+
+# ADD (Shifted Register)
+- Name: "ADD_X_REG_V0"
+  Mnemonic: "ADD"
+  Description: "Add (64-bit, shifted register)"
+  Opcode: "10001011"
+  Format: "ADD_SUB_REG"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['0', 'opc', '?']
+    S: ['0', 'S', '?']
+    shift: ['0', 'shift', '?']
+    "0_1": ['0', '0_1', '?']
+
+- Name: "ADD_W_REG_V0"
+  Mnemonic: "ADD"
+  Description: "Add (32-bit, shifted register)"
+  Opcode: "00001011"
+  Format: "ADD_SUB_REG"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['0', 'opc', '?']
+    S: ['0', 'S', '?']
+    shift: ['0', 'shift', '?']
+    "0_1": ['0', '0_1', '?']
+
+# ADDS (Shifted Register, set flags)
+- Name: "ADDS_X_REG_V0"
+  Mnemonic: "ADDS"
+  Description: "Add and Set Flags (64-bit, shifted register)"
+  Opcode: "10101011"
+  Format: "ADD_SUB_REG"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['0', 'opc', '?']
+    S: ['1', 'S', '?']
+    shift: ['0', 'shift', '?']
+    "0_1": ['0', '0_1', '?']
+  ImplicitOperands:
+    NZCV: ['NZCV', 'O']
+
+- Name: "ADDS_W_REG_V0"
+  Mnemonic: "ADDS"
+  Description: "Add and Set Flags (32-bit, shifted register)"
+  Opcode: "00101011"
+  Format: "ADD_SUB_REG"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['0', 'opc', '?']
+    S: ['1', 'S', '?']
+    shift: ['0', 'shift', '?']
+    "0_1": ['0', '0_1', '?']
+  ImplicitOperands:
+    NZCV: ['NZCV', 'O']
+
+# SUB (Shifted Register)
+- Name: "SUB_X_REG_V0"
+  Mnemonic: "SUB"
+  Description: "Subtract (64-bit, shifted register)"
+  Opcode: "11001011"
+  Format: "ADD_SUB_REG"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['2', 'opc', '?']
+    S: ['0', 'S', '?']
+    shift: ['0', 'shift', '?']
+    "0_1": ['0', '0_1', '?']
+
+- Name: "SUB_W_REG_V0"
+  Mnemonic: "SUB"
+  Description: "Subtract (32-bit, shifted register)"
+  Opcode: "01001011"
+  Format: "ADD_SUB_REG"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['2', 'opc', '?']
+    S: ['0', 'S', '?']
+    shift: ['0', 'shift', '?']
+    "0_1": ['0', '0_1', '?']
+
+# SUBS (Shifted Register, set flags)
+- Name: "SUBS_X_REG_V0"
+  Mnemonic: "SUBS"
+  Description: "Subtract and Set Flags (64-bit, shifted register)"
+  Opcode: "11101011"
+  Format: "ADD_SUB_REG"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['2', 'opc', '?']
+    S: ['1', 'S', '?']
+    shift: ['0', 'shift', '?']
+    "0_1": ['0', '0_1', '?']
+  ImplicitOperands:
+    NZCV: ['NZCV', 'O']
+
+- Name: "SUBS_W_REG_V0"
+  Mnemonic: "SUBS"
+  Description: "Subtract and Set Flags (32-bit, shifted register)"
+  Opcode: "01101011"
+  Format: "ADD_SUB_REG"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['2', 'opc', '?']
+    S: ['1', 'S', '?']
+    shift: ['0', 'shift', '?']
+    "0_1": ['0', '0_1', '?']
+  ImplicitOperands:
+    NZCV: ['NZCV', 'O']
+
+# MUL
+- Name: "MUL_X_V0"
+  Mnemonic: "MUL"
+  Description: "Multiply (64-bit)"
+  Opcode: "10011011"
+  Format: "MUL_DIV"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['0', 'opc', '?']
+
+- Name: "MUL_W_V0"
+  Mnemonic: "MUL"
+  Description: "Multiply (32-bit)"
+  Opcode: "00011011"
+  Format: "MUL_DIV"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['0', 'opc', '?']
+
+# SDIV
+- Name: "SDIV_X_V0"
+  Mnemonic: "SDIV"
+  Description: "Signed Divide (64-bit)"
+  Opcode: "10011011"
+  Format: "MUL_DIV"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['3', 'opc', '?']
+
+- Name: "SDIV_W_V0"
+  Mnemonic: "SDIV"
+  Description: "Signed Divide (32-bit)"
+  Opcode: "00011011"
+  Format: "MUL_DIV"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['3', 'opc', '?']
+
+# UDIV
+- Name: "UDIV_X_V0"
+  Mnemonic: "UDIV"
+  Description: "Unsigned Divide (64-bit)"
+  Opcode: "10011011"
+  Format: "MUL_DIV"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['2', 'opc', '?']
+
+- Name: "UDIV_W_V0"
+  Mnemonic: "UDIV"
+  Description: "Unsigned Divide (32-bit)"
+  Opcode: "00011011"
+  Format: "MUL_DIV"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['2', 'opc', '?']
+
+# ==================== Logical Operations ====================
+
+# AND (Immediate)
+- Name: "AND_X_IMM_V0"
+  Mnemonic: "AND"
+  Description: "Bitwise AND (64-bit, immediate)"
+  Opcode: "1000"
+  Format: "LOGICAL_IMM"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['0', 'opc', '?']
+
+- Name: "AND_W_IMM_V0"
+  Mnemonic: "AND"
+  Description: "Bitwise AND (32-bit, immediate)"
+  Opcode: "0000"
+  Format: "LOGICAL_IMM"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['0', 'opc', '?']
+
+# ORR (Immediate)
+- Name: "ORR_X_IMM_V0"
+  Mnemonic: "ORR"
+  Description: "Bitwise OR (64-bit, immediate)"
+  Opcode: "1000"
+  Format: "LOGICAL_IMM"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['1', 'opc', '?']
+
+- Name: "ORR_W_IMM_V0"
+  Mnemonic: "ORR"
+  Description: "Bitwise OR (32-bit, immediate)"
+  Opcode: "0000"
+  Format: "LOGICAL_IMM"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['1', 'opc', '?']
+
+# EOR (Immediate)
+- Name: "EOR_X_IMM_V0"
+  Mnemonic: "EOR"
+  Description: "Bitwise Exclusive OR (64-bit, immediate)"
+  Opcode: "1000"
+  Format: "LOGICAL_IMM"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['2', 'opc', '?']
+
+- Name: "EOR_W_IMM_V0"
+  Mnemonic: "EOR"
+  Description: "Bitwise Exclusive OR (32-bit, immediate)"
+  Opcode: "0000"
+  Format: "LOGICAL_IMM"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['2', 'opc', '?']
+
+# AND (Shifted Register)
+- Name: "AND_X_REG_V0"
+  Mnemonic: "AND"
+  Description: "Bitwise AND (64-bit, shifted register)"
+  Opcode: "10001010"
+  Format: "LOGICAL_REG"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['0', 'opc', '?']
+    shift: ['0', 'shift', '?']
+    N: ['0', 'N', '?']
+
+- Name: "AND_W_REG_V0"
+  Mnemonic: "AND"
+  Description: "Bitwise AND (32-bit, shifted register)"
+  Opcode: "00001010"
+  Format: "LOGICAL_REG"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['0', 'opc', '?']
+    shift: ['0', 'shift', '?']
+    N: ['0', 'N', '?']
+
+# ORR (Shifted Register)
+- Name: "ORR_X_REG_V0"
+  Mnemonic: "ORR"
+  Description: "Bitwise OR (64-bit, shifted register)"
+  Opcode: "10101010"
+  Format: "LOGICAL_REG"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['1', 'opc', '?']
+    shift: ['0', 'shift', '?']
+    N: ['0', 'N', '?']
+
+- Name: "ORR_W_REG_V0"
+  Mnemonic: "ORR"
+  Description: "Bitwise OR (32-bit, shifted register)"
+  Opcode: "00101010"
+  Format: "LOGICAL_REG"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['1', 'opc', '?']
+    shift: ['0', 'shift', '?']
+    N: ['0', 'N', '?']
+
+# EOR (Shifted Register)
+- Name: "EOR_X_REG_V0"
+  Mnemonic: "EOR"
+  Description: "Bitwise Exclusive OR (64-bit, shifted register)"
+  Opcode: "11001010"
+  Format: "LOGICAL_REG"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['2', 'opc', '?']
+    shift: ['0', 'shift', '?']
+    N: ['0', 'N', '?']
+
+- Name: "EOR_W_REG_V0"
+  Mnemonic: "EOR"
+  Description: "Bitwise Exclusive OR (32-bit, shifted register)"
+  Opcode: "01001010"
+  Format: "LOGICAL_REG"
+  Operands:
+    sf: ['0', 'sf', '?']
+    opc: ['2', 'opc', '?']
+    shift: ['0', 'shift', '?']
+    N: ['0', 'N', '?']
+
+# ==================== Load/Store ====================
+
+# LDR (Immediate, 64-bit)
+- Name: "LDR_X_IMM_V0"
+  Mnemonic: "LDR"
+  Description: "Load Register (64-bit, immediate offset)"
+  Opcode: "1110"
+  Format: "LOAD_STORE_IMM"
+  Operands:
+    size: ['3', 'size', '?']
+    opc: ['1', 'opc', '?']
+    V: ['0', 'V', '?']
+    opc2: ['1', 'opc2', '?']
+    opc3: ['1', 'opc3', '?']
+
+# LDR (Immediate, 32-bit)
+- Name: "LDR_W_IMM_V0"
+  Mnemonic: "LDR"
+  Description: "Load Register (32-bit, immediate offset)"
+  Opcode: "1010"
+  Format: "LOAD_STORE_IMM"
+  Operands:
+    size: ['2', 'size', '?']
+    opc: ['1', 'opc', '?']
+    V: ['0', 'V', '?']
+    opc2: ['1', 'opc2', '?']
+    opc3: ['1', 'opc3', '?']
+
+# STR (Immediate, 64-bit)
+- Name: "STR_X_IMM_V0"
+  Mnemonic: "STR"
+  Description: "Store Register (64-bit, immediate offset)"
+  Opcode: "1110"
+  Format: "LOAD_STORE_IMM"
+  Operands:
+    size: ['3', 'size', '?']
+    opc: ['0', 'opc', '?']
+    V: ['0', 'V', '?']
+    opc2: ['1', 'opc2', '?']
+    opc3: ['1', 'opc3', '?']
+
+# STR (Immediate, 32-bit)
+- Name: "STR_W_IMM_V0"
+  Mnemonic: "STR"
+  Description: "Store Register (32-bit, immediate offset)"
+  Opcode: "1010"
+  Format: "LOAD_STORE_IMM"
+  Operands:
+    size: ['2', 'size', '?']
+    opc: ['0', 'opc', '?']
+    V: ['0', 'V', '?']
+    opc2: ['1', 'opc2', '?']
+    opc3: ['1', 'opc3', '?']
+
+# LDP (Pair, 64-bit)
+- Name: "LDP_X_V0"
+  Mnemonic: "LDP"
+  Description: "Load Pair (64-bit)"
+  Opcode: "1010"
+  Format: "LOAD_STORE_PAIR"
+  Operands:
+    L: ['1', 'L', '?']
+
+# STP (Pair, 64-bit)
+- Name: "STP_X_V0"
+  Mnemonic: "STP"
+  Description: "Store Pair (64-bit)"
+  Opcode: "1010"
+  Format: "LOAD_STORE_PAIR"
+  Operands:
+    L: ['0', 'L', '?']
+
+# ==================== Branch ====================
+
+# B (Unconditional)
+- Name: "B_V0"
+  Mnemonic: "B"
+  Description: "Branch (unconditional)"
+  Opcode: "0001"
+  Format: "UNCOND_BRANCH_IMM"
+
+# BL (Branch with Link)
+- Name: "BL_V0"
+  Mnemonic: "BL"
+  Description: "Branch with Link"
+  Opcode: "1001"
+  Format: "UNCOND_BRANCH_IMM"
+  ImplicitOperands:
+    LR: ['LR', 'O']
+
+# BR (Branch to Register)
+- Name: "BR_V0"
+  Mnemonic: "BR"
+  Description: "Branch to Register"
+  Opcode: "1101"
+  Format: "UNCOND_BRANCH_REG"
+
+# BLR (Branch with Link to Register)
+- Name: "BLR_V0"
+  Mnemonic: "BLR"
+  Description: "Branch with Link to Register"
+  Opcode: "1101"
+  Format: "UNCOND_BRANCH_REG"
+  ImplicitOperands:
+    LR: ['LR', 'O']
+
+# RET (Return)
+- Name: "RET_V0"
+  Mnemonic: "RET"
+  Description: "Return from Subroutine"
+  Opcode: "1101"
+  Format: "UNCOND_BRANCH_REG"
+  Operands:
+    Rn: ['30', 'Rn', 'I']
+
+# B.cond (Conditional Branch)
+- Name: "B_COND_V0"
+  Mnemonic: "B."
+  Description: "Branch Conditional"
+  Opcode: "0101"
+  Format: "COND_BRANCH_IMM"
+
+# CBZ (Compare and Branch on Zero, 64-bit)
+- Name: "CBZ_X_V0"
+  Mnemonic: "CBZ"
+  Description: "Compare and Branch on Zero (64-bit)"
+  Opcode: "0110"
+  Format: "COMPARE_BRANCH"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['0', 'opc', '?']
+
+# CBNZ (Compare and Branch on Non-Zero, 64-bit)
+- Name: "CBNZ_X_V0"
+  Mnemonic: "CBNZ"
+  Description: "Compare and Branch on Non-Zero (64-bit)"
+  Opcode: "0111"
+  Format: "COMPARE_BRANCH"
+  Operands:
+    sf: ['1', 'sf', '?']
+    opc: ['0', 'opc', '?']
+
+# TBZ (Test and Branch on Zero)
+- Name: "TBZ_V0"
+  Mnemonic: "TBZ"
+  Description: "Test and Branch on Zero"
+  Opcode: "0110"
+  Format: "TEST_BRANCH"
+
+# TBNZ (Test and Branch on Non-Zero)
+- Name: "TBNZ_V0"
+  Mnemonic: "TBNZ"
+  Description: "Test and Branch on Non-Zero"
+  Opcode: "0111"
+  Format: "TEST_BRANCH"

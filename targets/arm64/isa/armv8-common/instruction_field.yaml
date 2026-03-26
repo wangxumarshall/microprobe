@@ -1,0 +1,301 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+# ARM64 Instruction Fields
+
+# Common fields
+
+# 5-bit register fields (64-bit)
+- Name: Rd
+  Description: Destination Register (64-bit)
+  Operand: GPR64_regs
+  Show: True
+  Size: 5
+  IO: "O"
+
+- Name: Rn
+  Description: First Source Register (64-bit)
+  Operand: GPR64_regs
+  Show: True
+  Size: 5
+  IO: "I"
+
+- Name: Rm
+  Description: Second Source Register (64-bit)
+  Operand: GPR64_regs
+  Show: True
+  Size: 5
+  IO: "I"
+
+- Name: Rt
+  Description: Transfer Register (for load/store, 64-bit)
+  Operand: GPR64_regs
+  Show: True
+  Size: 5
+  IO: "IO"
+
+- Name: Rt2
+  Description: Second Transfer Register (for load/store pair, 64-bit)
+  Operand: GPR64_regs
+  Show: True
+  Size: 5
+  IO: "IO"
+
+# 5-bit register fields (32-bit)
+- Name: Wd
+  Description: Destination Register (32-bit)
+  Operand: GPR32_regs
+  Show: True
+  Size: 5
+  IO: "O"
+
+- Name: Wn
+  Description: First Source Register (32-bit)
+  Operand: GPR32_regs
+  Show: True
+  Size: 5
+  IO: "I"
+
+- Name: Wm
+  Description: Second Source Register (32-bit)
+  Operand: GPR32_regs
+  Show: True
+  Size: 5
+  IO: "I"
+
+- Name: Wt
+  Description: Transfer Register (for load/store, 32-bit)
+  Operand: GPR32_regs
+  Show: True
+  Size: 5
+  IO: "IO"
+
+# SIMD/FP register fields
+- Name: Vd
+  Description: Destination SIMD Register
+  Operand: SIMD_FP_regs
+  Show: True
+  Size: 5
+  IO: "O"
+
+- Name: Vn
+  Description: First Source SIMD Register
+  Operand: SIMD_FP_regs
+  Show: True
+  Size: 5
+  IO: "I"
+
+- Name: Vm
+  Description: Second Source SIMD Register
+  Operand: SIMD_FP_regs
+  Show: True
+  Size: 5
+  IO: "I"
+
+- Name: Vt
+  Description: Transfer SIMD Register (for load/store)
+  Operand: SIMD_FP_regs
+  Show: True
+  Size: 5
+  IO: "IO"
+
+# Immediate fields
+- Name: imm16
+  Description: 16-bit Immediate
+  Operand: u.imm16
+  Show: True
+  Size: 16
+  IO: "I"
+
+- Name: imm12
+  Description: 12-bit Immediate (unsigned)
+  Operand: u.imm12
+  Show: True
+  Size: 12
+  IO: "I"
+
+- Name: imm9
+  Description: 9-bit Immediate (signed)
+  Operand: s.imm9
+  Show: True
+  Size: 9
+  IO: "I"
+
+- Name: imm7
+  Description: 7-bit Immediate (signed)
+  Operand: s.imm7
+  Show: True
+  Size: 7
+  IO: "I"
+
+- Name: imm5
+  Description: 5-bit Immediate (for shifts)
+  Operand: u.imm5
+  Show: True
+  Size: 5
+  IO: "I"
+
+- Name: imm6
+  Description: 6-bit Immediate (for shifts)
+  Operand: u.imm6
+  Show: True
+  Size: 6
+  IO: "I"
+
+- Name: imm26
+  Description: 26-bit Branch Immediate
+  Operand: s.imm26_shift2
+  Show: True
+  Size: 26
+  IO: "I"
+
+- Name: imm19
+  Description: 19-bit Conditional Branch Immediate
+  Operand: s.imm19_shift2
+  Show: True
+  Size: 19
+  IO: "I"
+
+- Name: imm14
+  Description: 14-bit Test Branch Immediate
+  Operand: s.imm14_shift2
+  Show: True
+  Size: 14
+  IO: "I"
+
+# Condition code
+- Name: cond
+  Description: Condition Code
+  Operand: condition_codes
+  Show: True
+  Size: 4
+  IO: "I"
+
+# Shift type
+- Name: shift
+  Description: Shift Type
+  Operand: shift_types
+  Show: True
+  Size: 2
+  IO: "I"
+
+# Option field (for extend)
+- Name: option
+  Description: Extend Option
+  Operand: extend_types
+  Show: True
+  Size: 3
+  IO: "I"
+
+# Fixed fields
+- Name: sf
+  Description: Size Flag (0=32-bit, 1=64-bit)
+  Show: False
+  Size: 1
+  IO: "?"
+
+- Name: S
+  Description: Set Flags
+  Show: False
+  Size: 1
+  IO: "?"
+
+- Name: N
+  Description: Negate (for logical immediate)
+  Show: False
+  Size: 1
+  IO: "?"
+
+- Name: L
+  Description: Load/Store (0=Store, 1=Load)
+  Show: False
+  Size: 1
+  IO: "?"
+
+- Name: V
+  Description: Vector/Scalar (0=Scalar, 1=Vector)
+  Show: False
+  Size: 1
+  IO: "?"
+
+- Name: hw
+  Description: Halfword Move Width
+  Show: False
+  Size: 2
+  IO: "?"
+
+# Size fields
+- Name: size
+  Description: Data Size
+  Show: False
+  Size: 2
+  IO: "?"
+
+- Name: opc
+  Description: Operation Code
+  Show: False
+  Size: 2
+  IO: "?"
+
+# Bit position for test branch
+- Name: b5
+  Description: Bit 5 of bit position
+  Show: False
+  Size: 1
+  IO: "?"
+
+- Name: b40
+  Description: Bits 0-4 of bit position
+  Show: False
+  Size: 5
+  IO: "?"
+
+# Logical immediate encoding
+- Name: immr
+  Description: Rotate amount
+  Show: False
+  Size: 6
+  IO: "?"
+
+- Name: imms
+  Description: Immediate element size
+  Show: False
+  Size: 6
+  IO: "?"
+
+# Zero fields
+- Name: "0_1"
+  Description: Zero field (1 bit)
+  Size: 1
+
+- Name: "0_2"
+  Description: Zero field (2 bits)
+  Size: 2
+
+- Name: "0_3"
+  Description: Zero field (3 bits)
+  Size: 3
+
+- Name: "0_4"
+  Description: Zero field (4 bits)
+  Size: 4
+
+- Name: "0_5"
+  Description: Zero field (5 bits)
+  Size: 5
+
+- Name: "0_10"
+  Description: Zero field (10 bits)
+  Size: 10
+
+- Name: "0_14"
+  Description: Zero field (14 bits)
+  Size: 14
+
+- Name: "0_15"
+  Description: Zero field (15 bits)
+  Size: 15
+
+- Name: "0_16"
+  Description: Zero field (16 bits)
+  Size: 16

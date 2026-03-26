@@ -1,0 +1,28 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+# ARM64 Register Types
+
+- Name: GPR64
+  Description: 64-bit General Purpose Register
+  Size: 64
+
+- Name: GPR32
+  Description: 32-bit General Purpose Register (lower 32 bits)
+  Size: 32
+
+- Name: SIMD_FP
+  Description: SIMD and Floating Point Register (128-bit)
+  Size: 128
+
+- Name: SPR
+  Description: Special Purpose Register
+  Size: 64
+
+- Name: SystemReg
+  Description: System Register
+  Size: 64
+
+- Name: Condition
+  Description: Condition Flags (NZCV)
+  Size: 4

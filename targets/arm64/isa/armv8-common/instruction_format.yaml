@@ -1,0 +1,314 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+# ARM64 Instruction Formats
+
+# Data Processing - Immediate
+
+- Name: "PCREL_ADDR"
+  Description: "PC-relative Addressing (ADRP/ADR)"
+  Fields:
+  - "opc"
+  - "immlo"
+  - "immhi"
+  - "Rd"
+  Assembly: "OPC Rd, label"
+
+- Name: "ADD_SUB_IMM"
+  Description: "Add/Subtract (Immediate)"
+  Fields:
+  - "sf"
+  - "opc"
+  - "S"
+  - "shift"
+  - "imm12"
+  - "Rn"
+  - "Rd"
+  Assembly: "OPC Rd, Rn, imm12"
+
+- Name: "LOGICAL_IMM"
+  Description: "Logical (Immediate)"
+  Fields:
+  - "sf"
+  - "opc"
+  - "N"
+  - "immr"
+  - "imms"
+  - "Rn"
+  - "Rd"
+  Assembly: "OPC Rd, Rn, imm"
+
+- Name: "MOVE_WIDE"
+  Description: "Move Wide (Immediate)"
+  Fields:
+  - "sf"
+  - "opc"
+  - "hw"
+  - "imm16"
+  - "Rd"
+  Assembly: "OPC Rd, imm16, shift"
+
+- Name: "BITFIELD_IMM"
+  Description: "Bitfield (Immediate)"
+  Fields:
+  - "sf"
+  - "opc"
+  - "N"
+  - "immr"
+  - "imms"
+  - "Rn"
+  - "Rd"
+  Assembly: "OPC Rd, Rn, immr, imms"
+
+# Data Processing - Register
+
+- Name: "LOGICAL_REG"
+  Description: "Logical (Shifted Register)"
+  Fields:
+  - "sf"
+  - "opc"
+  - "shift"
+  - "N"
+  - "Rm"
+  - "imm6"
+  - "Rn"
+  - "Rd"
+  Assembly: "OPC Rd, Rn, Rm, shift imm6"
+
+- Name: "ADD_SUB_REG"
+  Description: "Add/Subtract (Shifted Register)"
+  Fields:
+  - "sf"
+  - "opc"
+  - "S"
+  - "shift"
+  - "0_1"
+  - "Rm"
+  - "imm6"
+  - "Rn"
+  - "Rd"
+  Assembly: "OPC Rd, Rn, Rm, shift imm6"
+
+- Name: "ADD_SUB_EXT"
+  Description: "Add/Subtract (Extended Register)"
+  Fields:
+  - "sf"
+  - "opc"
+  - "S"
+  - "option"
+  - "imm3"
+  - "Rm"
+  - "Rn"
+  - "Rd"
+  Assembly: "OPC Rd, Rn, Rm, extend imm3"
+
+- Name: "MUL_DIV"
+  Description: "Multiply/Divide"
+  Fields:
+  - "sf"
+  - "0_1"
+  - "0_14"
+  - "Rm"
+  - "0_14"
+  - "Rn"
+  - "Rd"
+  Assembly: "OPC Rd, Rn, Rm"
+
+- Name: "DP_3REG"
+  Description: "Data Processing (3 Registers)"
+  Fields:
+  - "sf"
+  - "opc"
+  - "0_1"
+  - "Rm"
+  - "0_10"
+  - "Rn"
+  - "Rd"
+  Assembly: "OPC Rd, Rn, Rm"
+
+# Load/Store
+
+- Name: "LOAD_STORE_IMM"
+  Description: "Load/Store (Immediate Post/Pre-Indexed)"
+  Fields:
+  - "size"
+  - "opc"
+  - "V"
+  - "opc2"
+  - "imm9"
+  - "opc3"
+  - "Rn"
+  - "Rt"
+  Assembly: "OPC Rt, [Rn], imm9"
+
+- Name: "LOAD_STORE_REG"
+  Description: "Load/Store (Register)"
+  Fields:
+  - "size"
+  - "opc"
+  - "V"
+  - "opc2"
+  - "option"
+  - "S"
+  - "Rm"
+  - "Rn"
+  - "Rt"
+  Assembly: "OPC Rt, [Rn, Rm, extend]"
+
+- Name: "LOAD_STORE_PAIR"
+  Description: "Load/Store Pair"
+  Fields:
+  - "opc"
+  - "L"
+  - "0_1"
+  - "imm7"
+  - "Rt2"
+  - "Rn"
+  - "Rt"
+  Assembly: "OPC Rt, Rt2, [Rn, imm7]"
+
+- Name: "LOAD_LITERAL"
+  Description: "Load Literal"
+  Fields:
+  - "opc"
+  - "V"
+  - "0_1"
+  - "imm19"
+  - "Rt"
+  Assembly: "OPC Rt, label"
+
+- Name: "LOAD_STORE_EXCLUSIVE"
+  Description: "Load/Store Exclusive"
+  Fields:
+  - "size"
+  - "0_2"
+  - "L"
+  - "0_1"
+  - "0_1"
+  - "Rs"
+  - "0_1"
+  - "Rt2"
+  - "Rn"
+  - "Rt"
+  Assembly: "OPC Rt, [Rn]"
+
+# Branch
+
+- Name: "UNCOND_BRANCH_IMM"
+  Description: "Unconditional Branch (Immediate)"
+  Fields:
+  - "opc"
+  - "imm26"
+  Assembly: "OPC label"
+
+- Name: "COND_BRANCH_IMM"
+  Description: "Conditional Branch (Immediate)"
+  Fields:
+  - "0_1"
+  - "imm19"
+  - "0_5"
+  - "cond"
+  Assembly: "OPC cond, label"
+
+- Name: "COMPARE_BRANCH"
+  Description: "Compare and Branch"
+  Fields:
+  - "sf"
+  - "opc"
+  - "0_1"
+  - "imm19"
+  - "Rn"
+  - "0_5"
+  Assembly: "OPC Rn, label"
+
+- Name: "TEST_BRANCH"
+  Description: "Test and Branch"
+  Fields:
+  - "sf"
+  - "opc"
+  - "b5"
+  - "b40"
+  - "imm14"
+  - "Rn"
+  - "0_5"
+  Assembly: "OPC Rn, bit, label"
+
+- Name: "UNCOND_BRANCH_REG"
+  Description: "Unconditional Branch (Register)"
+  Fields:
+  - "opc"
+  - "0_5"
+  - "Rn"
+  - "0_15"
+  Assembly: "OPC Rn"
+
+# System
+
+- Name: "SYSTEM_REG"
+  Description: "System Register Access"
+  Fields:
+  - "opc"
+  - "CRm"
+  - "CRn"
+  - "op0"
+  - "op1"
+  - "op2"
+  - "Rt"
+  Assembly: "OPC Rt, system_reg"
+
+- Name: "EXCEPTION"
+  Description: "Exception Generation"
+  Fields:
+  - "opc"
+  - "imm16"
+  - "opc2"
+  Assembly: "OPC imm16"
+
+# SIMD/FP
+
+- Name: "FP_DP_1REG"
+  Description: "Floating Point Data Processing (1 Register)"
+  Fields:
+  - "type"
+  - "0_1"
+  - "opc"
+  - "0_10"
+  - "Rn"
+  - "Rd"
+  Assembly: "OPC Rd, Rn"
+
+- Name: "FP_DP_2REG"
+  Description: "Floating Point Data Processing (2 Registers)"
+  Fields:
+  - "type"
+  - "0_1"
+  - "opc"
+  - "Rm"
+  - "0_5"
+  - "Rn"
+  - "Rd"
+  Assembly: "OPC Rd, Rn, Rm"
+
+- Name: "FP_COMPARE"
+  Description: "Floating Point Compare"
+  Fields:
+  - "type"
+  - "0_1"
+  - "opc"
+  - "Rm"
+  - "0_10"
+  - "Rn"
+  - "0_5"
+  Assembly: "OPC Rn, Rm"
+
+- Name: "SIMD_DP_3REG"
+  Description: "SIMD Data Processing (3 Registers)"
+  Fields:
+  - "Q"
+  - "U"
+  - "size"
+  - "Rm"
+  - "opc"
+  - "Rn"
+  - "Rd"
+  Assembly: "OPC Vd, Vn, Vm"
