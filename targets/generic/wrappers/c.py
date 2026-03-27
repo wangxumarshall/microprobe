@@ -360,13 +360,25 @@ class CWrapper(microprobe.code.wrapper.Wrapper):
 
         for index, info in enumerate(self.benchmark.pass_info):
             sinfo = info.split("-", 1)
+            if len(sinfo) == 2:
+                step_name = sinfo[0].strip()
+                step_detail = sinfo[1].strip()
+            else:
+                # Newer local passes sometimes emit plain progress strings
+                # instead of the historic "<pass> - <detail>" format.
+                step_name = "PassInfo"
+                step_detail = sinfo[0].strip()
+
             sinfo2 = [
-                sinfo[1][i: i + 45] for i in range(0, len(sinfo[1]), 45)
+                step_detail[i: i + 45]
+                for i in range(0, len(step_detail), 45)
             ]
+            if not sinfo2:
+                sinfo2 = [""]
 
             main.append(
                 'printf("  Step:%2s %24s %40s\\n");'
-                % (index, sinfo[0], sinfo2[0])
+                % (index, step_name, sinfo2[0])
             )
             for line in sinfo2[1:]:
                 main.append('printf("%s%s\\n");' % (" " * 36, line.strip()))
@@ -399,7 +411,7 @@ class CWrapper(microprobe.code.wrapper.Wrapper):
 
         main.append('printf("Other Information\\n");')
         # main.append("printf(\"%s\\n\");" % ("*"*80))
-        for info in enumerate(self.benchmark.info):
+        for info in self.benchmark.info:
             main.append('printf("%s\\n");' % (info))
         main.append('printf("\\n");')
 

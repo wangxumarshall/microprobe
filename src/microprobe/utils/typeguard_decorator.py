@@ -24,9 +24,13 @@ from typing import Any
 
 
 # Third party modules
+typeguard = None
 if "unittest" in sys.modules:
     # running in testsuite, enable runtime type checking
-    import typeguard
+    try:
+        import typeguard
+    except ImportError:  # pragma: no cover - optional dependency
+        typeguard = None
 
 
 # Constants
@@ -36,6 +40,6 @@ __all__ = ["typeguard_testsuite"]
 # Functions
 def typeguard_testsuite(dec: Any) -> Any:
     """Only perform runtime type checking when running testsuite"""
-    if "unittest" in sys.modules:
+    if "unittest" in sys.modules and typeguard is not None:
         return typeguard.typechecked(dec)
     return dec
