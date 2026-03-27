@@ -216,8 +216,7 @@ def find_microarchitecture_definitions(paths: List[str] | None = None):
         try:
             definition = Definition(uarchfile, isadef["Name"],
                                     isadef["Description"])
-            if (definition not in results
-                    and not definition.name.endswith("common")):
+            if definition not in results:
                 results.append(definition)
 
         except TypeError as exc:

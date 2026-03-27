@@ -17,7 +17,7 @@
 
 # Futures
 from __future__ import absolute_import, print_function, annotations
-from typing import TYPE_CHECKING, Dict, List
+from typing import TYPE_CHECKING, Any, Dict, List
 
 # Own modules
 from microprobe.code.cfg import Cfg
@@ -160,6 +160,7 @@ class Benchmark(BuildingBlock):
         self._fini: List[Instruction] = []
         self._vardisplacement = 0
         self._context = None
+        self._metadata: Dict[str, Any] = {}
         self._num_threads = 1
 
     @property
@@ -366,6 +367,23 @@ class Benchmark(BuildingBlock):
         """Return benchmark's context"""
         return self._context
 
+    @property
+    def metadata(self) -> Dict[str, Any]:
+        """Return benchmark metadata.
+
+        This channel is intended for structured analysis information which
+        does not belong in the execution ``Context``.
+        """
+        return self._metadata
+
+    def set_metadata(self, key: str, value: Any):
+        """Store structured metadata on the benchmark."""
+        self._metadata[key] = value
+
+    def get_metadata(self, key: str, default: Any = None):
+        """Read structured metadata from the benchmark."""
+        return self._metadata.get(key, default)
+
     def add_instructions(self,
                          instrs: List[Instruction],
                          after: Instruction | None = None,
@@ -463,6 +481,7 @@ class MultiThreadedBenchmark(Benchmark):
 
     def __init__(self, num_threads: int = 1):
         """ """
+        self._metadata: Dict[str, Any] = {}
         self._num_threads = num_threads
         self._threads: Dict[int, Benchmark] = {}
         for idx in range(1, num_threads + 1):

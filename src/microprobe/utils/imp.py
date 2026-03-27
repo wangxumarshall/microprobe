@@ -19,9 +19,10 @@
 from __future__ import absolute_import
 
 # Built-in modules
-import imp
+import importlib.util
 import inspect
 import os
+import sys
 
 # Own modules
 from microprobe.exceptions import MicroprobeArchitectureDefinitionError, \
@@ -58,6 +59,17 @@ def _fix_importname(mname):
     return mname
 
 
+def _load_source(import_name, module_str):
+    spec = importlib.util.spec_from_file_location(import_name, module_str)
+    if spec is None or spec.loader is None:
+        raise ImportError("Unable to import module '%s'" % module_str)
+
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[import_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 def find_subclasses(module_str, clazz, extra_import_name=None):
     """
 
@@ -79,7 +91,7 @@ def find_subclasses(module_str, clazz, extra_import_name=None):
 
     LOG.debug("Extra import name: '%s'", import_name)
 
-    module = imp.load_source(import_name, module_str)
+    module = _load_source(import_name, module_str)
 
     LOG.debug("Module imported")
 
@@ -122,7 +134,7 @@ def get_object_from_module(clsname, module):
     """
 
     try:
-        module = imp.load_source(_fix_importname(module + clsname), module)
+        module = _load_source(_fix_importname(module + clsname), module)
     except IOError:
         raise MicroprobeArchitectureDefinitionError(
             "Module '%s' not found" % module
@@ -151,7 +163,7 @@ def get_attr_from_module(attr, module):
     """
 
     try:
-        module = imp.load_source(_fix_importname(module + attr), module)
+        module = _load_source(_fix_importname(module + attr), module)
     except IOError:
         raise MicroprobeImportDefinitionError("Module '%s' not found" % module)
 
@@ -177,7 +189,7 @@ def get_dict_from_module(module):
     """
 
     try:
-        module = imp.load_source(_fix_importname(module), module)
+        module = _load_source(_fix_importname(module), module)
     except IOError:
         raise MicroprobeImportDefinitionError("Module '%s' not found" % module)
 
@@ -189,7 +201,7 @@ def get_dict_from_module(module):
 
 def load_source(name, path):
     try:
-        module = imp.load_source(name, path)
+        module = _load_source(name, path)
     except ImportError as exc:
         raise MicroprobeImportError(str(exc))
 

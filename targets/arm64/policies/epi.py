@@ -62,8 +62,6 @@ def policy(target, wrapper, **kwargs):
         microprobe.passes.address.UpdateInstructionAddressesPass()
     )
     
-    synthesizer.add_pass(microprobe.passes.branch.BranchNextPass())
-    
     synthesizer.add_pass(
         microprobe.passes.memory.SingleMemoryStreamPass(16, 256)
     )

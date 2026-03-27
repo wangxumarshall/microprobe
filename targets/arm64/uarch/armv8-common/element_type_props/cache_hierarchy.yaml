@@ -1,0 +1,36 @@
+---
+- Name: cache_next_level
+  Description: Next cache level
+  Default: NO_DEFAULT
+
+- Name: cache_size
+  Description: Cache size in KB
+  Default: NO_DEFAULT
+  Values:
+    L1I: 64
+    L1D: 64
+    L2: 512
+
+- Name: cache_linesize
+  Description: Cache line size in bytes
+  Default: NO_DEFAULT
+  Values:
+    L1I: 64
+    L1D: 64
+    L2: 64
+
+- Name: cache_ways
+  Description: Cache associativity
+  Default: NO_DEFAULT
+  Values:
+    L1I: 4
+    L1D: 4
+    L2: 8
+
+- Name: cache_address_size
+  Description: Cache address size in bits
+  Default: NO_DEFAULT
+  Values:
+    L1I: 64
+    L1D: 64
+    L2: 64

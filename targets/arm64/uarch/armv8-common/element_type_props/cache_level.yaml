@@ -1,0 +1,8 @@
+---
+- Name: cache_level
+  Description: Integer indicating the element level in the cache hierarchy
+  Default: NO_DEFAULT
+  Values:
+    L1I: 1
+    L1D: 1
+    L2: 2

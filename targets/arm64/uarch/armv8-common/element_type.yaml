@@ -1,0 +1,20 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+- Name: Processor
+  Description: ARM64 processor root
+
+- Name: Core
+  Description: ARM64 CPU core
+
+- Name: MEM
+  Description: Main memory
+
+- Name: L2
+  Description: Shared unified L2 cache
+
+- Name: L1D
+  Description: Level-1 data cache
+
+- Name: L1I
+  Description: Level-1 instruction cache

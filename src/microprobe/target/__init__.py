@@ -72,6 +72,14 @@ __all__ = [
     "Definition"
 ]
 
+_DEFINITION_TUPLE_ALIASES = {
+    # Legacy local ARM64 tuple used throughout the in-tree tests and notes.
+    "armv8-common-cortex-a53-aarch64_linux_gcc":
+    "armv8_common-armv8_common-aarch64_linux_gcc",
+    "armv8-common-cortex-a53-aarch64_baremetal":
+    "armv8_common-armv8_common-aarch64_baremetal",
+}
+
 
 # Functions
 def import_definition(definition_tuple: str
@@ -132,43 +140,80 @@ def _parse_definition_tuple(definition_tuple: str):
         specified is not found
     """
 
-    try:
-        isa_def, architecture_def, env_def = definition_tuple.split("-")
-    except ValueError:
-        raise MicroprobeTargetDefinitionError(
-            "Invalid format of '%s' target tuple" % definition_tuple)
+    definition_tuple = _DEFINITION_TUPLE_ALIASES.get(
+        definition_tuple, definition_tuple
+    )
 
-    definitions = find_isa_definitions()
-    if isa_def not in [definition.name for definition in definitions]:
-        raise MicroprobeTargetDefinitionError("ISA '%s' not available" %
-                                              isa_def)
-    else:
-        isa_def = [
-            definition for definition in definitions
-            if definition.name == isa_def
-        ][-1]
+    isa_defs = find_isa_definitions()
+    uarch_defs = find_microarchitecture_definitions()
+    env_defs = find_env_definitions()
 
-    definitions = find_microarchitecture_definitions()
-    if architecture_def not in [definition.name for definition in definitions]:
-        raise MicroprobeTargetDefinitionError(
-            "Microarchitecture '%s' not available" % architecture_def)
-    else:
-        architecture_def = [
-            definition for definition in definitions
-            if definition.name == architecture_def
-        ][-1]
+    env_def = _match_definition_suffix(definition_tuple, env_defs, "Environment")
+    prefix = definition_tuple[:-(len(env_def.name) + 1)]
 
-    definitions = find_env_definitions()
-    if env_def not in [definition.name for definition in definitions]:
-        raise MicroprobeTargetDefinitionError(
-            "Environment '%s' not available. " % env_def)
-    else:
-        env_def = [
-            definition for definition in definitions
-            if definition.name == env_def
-        ][-1]
+    isa_def = _match_definition_prefix(prefix, isa_defs, "ISA")
+    architecture_name = prefix[len(isa_def.name) + 1:]
+    architecture_def = _match_definition_name(
+        architecture_name, uarch_defs, "Microarchitecture"
+    )
 
     return (isa_def, architecture_def, env_def)
+
+
+def _normalize_definition_name(name: str) -> str:
+    return name.replace("-", "_")
+
+
+def _match_definition_name(definition_name: str, definitions, kind: str):
+    candidates = [definition for definition in definitions if definition.name == definition_name]
+    if candidates:
+        return candidates[-1]
+
+    normalized = _normalize_definition_name(definition_name)
+    candidates = [
+        definition
+        for definition in definitions
+        if _normalize_definition_name(definition.name) == normalized
+    ]
+    if candidates:
+        return candidates[-1]
+
+    raise MicroprobeTargetDefinitionError(
+        "%s '%s' not available" % (kind, definition_name)
+    )
+
+
+def _match_definition_suffix(definition_tuple: str, definitions, kind: str):
+    ordered = sorted(definitions, key=lambda definition: len(definition.name), reverse=True)
+    for definition in ordered:
+        if definition_tuple == definition.name:
+            return definition
+        if definition_tuple.endswith("-%s" % definition.name):
+            return definition
+        normalized_tuple = _normalize_definition_name(definition_tuple)
+        if normalized_tuple.endswith("-%s" % _normalize_definition_name(definition.name)):
+            return definition
+
+    raise MicroprobeTargetDefinitionError(
+        "%s not available in target tuple '%s'" % (kind, definition_tuple)
+    )
+
+
+def _match_definition_prefix(definition_tuple: str, definitions, kind: str):
+    ordered = sorted(definitions, key=lambda definition: len(definition.name), reverse=True)
+    normalized_tuple = _normalize_definition_name(definition_tuple)
+    for definition in ordered:
+        if definition_tuple == definition.name:
+            return definition
+        if definition_tuple.startswith("%s-" % definition.name):
+            return definition
+        normalized_name = _normalize_definition_name(definition.name)
+        if normalized_tuple.startswith("%s-" % normalized_name):
+            return definition
+
+    raise MicroprobeTargetDefinitionError(
+        "%s not available in target tuple '%s'" % (kind, definition_tuple)
+    )
 
 
 # def import_policies(target_name):

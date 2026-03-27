@@ -16,7 +16,10 @@ __all__ = ["aarch64_linux_gcc"]
 
 class aarch64_linux_gcc(GenericEnvironment):
     """ARM64 Linux environment with GCC."""
-    
+
+    DEFAULT_WRAPPER = "CWrapper"
+    DIFF_WRAPPER = "BareMetalDiffWrapper"
+
     def __init__(self, isa):
         super(aarch64_linux_gcc, self).__init__(
             "aarch64_linux_gcc",
@@ -24,7 +27,9 @@ class aarch64_linux_gcc(GenericEnvironment):
             isa,
             little_endian=True
         )
-        self._default_wrapper = "CWrapper"
+        # Keep the default path on the generic C wrapper until the dedicated
+        # differential wrapper lands in-tree.
+        self._default_wrapper = self.DEFAULT_WRAPPER
     
     @property
     def stack_pointer(self):
@@ -80,5 +85,10 @@ class aarch64_linux_gcc(GenericEnvironment):
         # Volatile SIMD/FP: V0-V7, V16-V31
         for idx in list(range(0, 8)) + list(range(16, 32)):
             rlist.append(self.target.registers[f'V{idx}'])
-        
+
         return rlist
+
+    @property
+    def preferred_diff_wrapper(self):
+        """Dedicated wrapper name to use for SDC differential runs."""
+        return self.DIFF_WRAPPER

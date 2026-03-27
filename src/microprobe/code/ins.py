@@ -1742,6 +1742,19 @@ class InstructionMemoryOperandValue(Pickable):
 class Instruction(Pickable):
     """Class to represent an instruction"""
 
+    _DEFAULT_BOOL_ATTRIBUTES = {
+        "disable_asm",
+        "unsupported",
+        "privileged",
+        "hypervisor",
+        "trap",
+        "syscall",
+        "branch",
+        "branch_relative",
+        "access_storage",
+        "access_storage_with_update",
+    }
+
     def __init__(self):
         """ """
         self._address = None
@@ -1776,6 +1789,10 @@ class Instruction(Pickable):
 
         for field, operand_descr in instrtype.operand_descriptors.items():
             self._operands[field] = InstructionOperandValue(operand_descr)
+            if operand_descr.type.constant:
+                self._operands[field].set_value(
+                    list(operand_descr.type.values())[0], check=False
+                )
 
         for mem_operand_descr in instrtype.memory_operand_descriptors:
             operand_values = []
@@ -2238,6 +2255,8 @@ class Instruction(Pickable):
             try:
                 return self._arch_type.__getattr__(name)
             except AttributeError:
+                if name in self._DEFAULT_BOOL_ATTRIBUTES:
+                    return False
                 raise AttributeError(
                     "'%s' object has no attribute '%s'"
                     % (self.__class__.__name__, name)

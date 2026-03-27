@@ -3,6 +3,24 @@
 
 # ARM64 Operands
 
+# Special operands
+
+- Name: Zero
+  Description: Zero operand (special, not shown)
+  Value: 0
+
+- Name: NZCV
+  Description: Condition flags register
+  Register: NZCV
+
+- Name: LR
+  Description: Link register
+  Register: LR
+
+- Name: FP
+  Description: Frame pointer register
+  Register: FP
+
 # Register Operands
 
 - Name: GPR64_regs
@@ -189,6 +207,11 @@
   Description: Unsigned 5-bit Immediate
   Min: 0
   Max: 31
+
+- Name: u.imm2
+  Description: Unsigned 2-bit Immediate
+  Min: 0
+  Max: 3
 
 - Name: u.imm6
   Description: Unsigned 6-bit Immediate

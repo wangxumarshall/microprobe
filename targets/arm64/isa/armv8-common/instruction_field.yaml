@@ -99,6 +99,13 @@
   Size: 5
   IO: "IO"
 
+- Name: Rs
+  Description: Status/source register
+  Operand: GPR64_regs
+  Show: True
+  Size: 5
+  IO: "I"
+
 # Immediate fields
 - Name: imm16
   Description: 16-bit Immediate
@@ -106,6 +113,19 @@
   Show: True
   Size: 16
   IO: "I"
+
+- Name: immhi
+  Description: High bits of a PC-relative immediate
+  Operand: s.imm19_shift2
+  Show: True
+  Size: 19
+  IO: "?"
+
+- Name: immlo
+  Description: Low bits of a PC-relative immediate
+  Show: False
+  Size: 2
+  IO: "?"
 
 - Name: imm12
   Description: 12-bit Immediate (unsigned)
@@ -141,6 +161,12 @@
   Show: True
   Size: 6
   IO: "I"
+
+- Name: imm3
+  Description: 3-bit Immediate
+  Show: False
+  Size: 3
+  IO: "?"
 
 - Name: imm26
   Description: 26-bit Branch Immediate
@@ -187,6 +213,12 @@
   Size: 3
   IO: "I"
 
+- Name: type
+  Description: Floating-point precision selector
+  Show: False
+  Size: 2
+  IO: "?"
+
 # Fixed fields
 - Name: sf
   Description: Size Flag (0=32-bit, 1=64-bit)
@@ -218,11 +250,36 @@
   Size: 1
   IO: "?"
 
+- Name: A
+  Description: Acquire semantics selector
+  Show: False
+  Size: 1
+  IO: "?"
+
+- Name: R
+  Description: Release semantics selector
+  Show: False
+  Size: 1
+  IO: "?"
+
+- Name: Q
+  Description: Vector width selector
+  Show: False
+  Size: 1
+  IO: "?"
+
+- Name: U
+  Description: Unsigned/Signed selector
+  Show: False
+  Size: 1
+  IO: "?"
+
 - Name: hw
   Description: Halfword Move Width
-  Show: False
+  Operand: u.imm2
+  Show: True
   Size: 2
-  IO: "?"
+  IO: "I"
 
 # Size fields
 - Name: size
@@ -233,6 +290,18 @@
 
 - Name: opc
   Description: Operation Code
+  Show: False
+  Size: 2
+  IO: "?"
+
+- Name: opc2
+  Description: Secondary operation code
+  Show: False
+  Size: 2
+  IO: "?"
+
+- Name: opc3
+  Description: Tertiary operation code
   Show: False
   Size: 2
   IO: "?"
@@ -261,6 +330,36 @@
   Description: Immediate element size
   Show: False
   Size: 6
+  IO: "?"
+
+- Name: CRm
+  Description: System register field CRm
+  Show: False
+  Size: 4
+  IO: "?"
+
+- Name: CRn
+  Description: System register field CRn
+  Show: False
+  Size: 4
+  IO: "?"
+
+- Name: op0
+  Description: System register field op0
+  Show: False
+  Size: 2
+  IO: "?"
+
+- Name: op1
+  Description: System register field op1
+  Show: False
+  Size: 3
+  IO: "?"
+
+- Name: op2
+  Description: System register field op2
+  Show: False
+  Size: 3
   IO: "?"
 
 # Zero fields

@@ -1,0 +1,23 @@
+# Copyright 2026
+# Licensed under the Apache License, Version 2.0
+
+- Name: Processor
+  Type: Processor
+  Subelements:
+    - Core
+
+- Name: Core
+  Type: Core
+  Subelements:
+    - L1I
+    - L1D
+    - L2
+
+- Name: L1I
+  Type: L1I
+
+- Name: L1D
+  Type: L1D
+
+- Name: L2
+  Type: L2

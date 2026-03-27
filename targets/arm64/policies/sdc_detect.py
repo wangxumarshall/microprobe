@@ -8,6 +8,8 @@ ARM64 SDC Detection Policy
 from __future__ import absolute_import, print_function
 
 import microprobe.code
+from microprobe.code.context import Context
+from microprobe.code.ins import Instruction
 import microprobe.passes.address
 import microprobe.passes.branch
 import microprobe.passes.initialization
@@ -23,9 +25,31 @@ __all__ = ["NAME", "DESCRIPTION", "SUPPORTED_TARGETS", "policy"]
 
 NAME = "sdc_detect"
 DESCRIPTION = "SDC detection policy for ARM64"
-SUPPORTED_TARGETS = ["armv8-common-cortex-a53-aarch64_linux_gcc"]
+SUPPORTED_TARGETS = ["all"]
 
 LOG = get_logger(__name__)
+
+
+def _target_looks_like_arm64(target):
+    """Best-effort guard until the ARM64 target tuple is normalized."""
+    registers = getattr(target, "registers", {})
+    return all(reg in registers for reg in ["X0", "SP", "V0", "LR"])
+
+
+def _materialize_instruction(target, instruction):
+    if isinstance(instruction, Instruction):
+        return instruction.copy()
+
+    if hasattr(instruction, "name"):
+        instr = target.new_instruction(instruction.name)
+        for operand in instr.operands():
+            if operand.value is None:
+                operand.set_value(operand.type.random_value(RND))
+        return instr
+
+    raise MicroprobePolicyError(
+        "Expected an ARM64 instruction instance or instruction type"
+    )
 
 
 def policy(target, wrapper, **kwargs):
@@ -36,17 +60,24 @@ def policy(target, wrapper, **kwargs):
     corruption in ARM64 systems.
     """
     
-    if target.name not in SUPPORTED_TARGETS:
+    if not _target_looks_like_arm64(target):
         raise MicroprobePolicyError(
             f"Policy '{NAME}' not valid for target '{target.name}'. "
-            f"Supported targets: {','.join(SUPPORTED_TARGETS)}"
+            "Expected an ARM64/AArch64 target with X/V register files."
         )
-    
-    instr = kwargs["instruction"]
-    sequence = [kwargs["instruction"]]
-    
+
+    instruction = kwargs["instruction"]
+    if not hasattr(instruction, "name"):
+        raise MicroprobePolicyError(
+            "The 'instruction' argument must be an ARM64 instruction type"
+        )
+
+    sequence = [instruction]
+    dependency_distance = kwargs.get("dependency_distance", 1)
+    benchmark_size = kwargs["benchmark_size"]
+
     synthesizer = microprobe.code.Synthesizer(target, wrapper, value=RNDINT)
-    
+
     # Initialize registers with known values
     synthesizer.add_pass(
         microprobe.passes.initialization.InitializeRegistersPass(value=RNDINT)
@@ -54,18 +85,16 @@ def policy(target, wrapper, **kwargs):
     
     # Initialize floating point registers
     synthesizer.add_pass(
-        microprobe.passes.initialization.InitializeRegistersPass(
-            fp_value=1.000000000000001
-        )
+        microprobe.passes.initialization.InitializeRegistersPass()
     )
     
     # Create test structure
     synthesizer.add_pass(
         microprobe.passes.structure.SimpleBuildingBlockPass(
-            kwargs["benchmark_size"]
+            benchmark_size
         )
     )
-    
+
     # Set instruction sequence
     synthesizer.add_pass(
         microprobe.passes.instruction.SetInstructionTypeBySequencePass(
@@ -83,22 +112,30 @@ def policy(target, wrapper, **kwargs):
     # 2. Redundant computation
     # 3. Boundary checks
     
-    # Branch to next
-    synthesizer.add_pass(microprobe.passes.branch.BranchNextPass())
-    
-    # Memory initialization
+    # Give memory instructions a concrete stream without assuming a special
+    # data-segment pass exists.
     synthesizer.add_pass(
-        microprobe.passes.memory.DefineDataSegmentPass(
-            kwargs.get("data_size", 1024),
-            kwargs.get("data_value", 0)
+        microprobe.passes.memory.SingleMemoryStreamPass(
+            kwargs.get("memory_stream_size", 16),
+            kwargs.get("memory_stream_stride", 256),
         )
     )
-    
-    # Register allocation
+
+    if dependency_distance < 1:
+        synthesizer.add_pass(
+            microprobe.passes.register.NoHazardsAllocationPass()
+        )
+
     synthesizer.add_pass(
-        microprobe.passes.register.AllocateRegistersPass()
+        microprobe.passes.register.DefaultRegisterAllocationPass(
+            RND, dd=dependency_distance
+        )
     )
-    
+
+    synthesizer.add_pass(
+        microprobe.passes.address.UpdateInstructionAddressesPass()
+    )
+
     return synthesizer
 
 
@@ -137,15 +174,15 @@ def _generate_checksum_test(target, instruction):
     # Initialize checksum register
     checksum_reg = target.registers["X9"]
     mov_ins = target.new_instruction("MOVZ_X_V0")
-    mov_ins.set_operands([checksum_reg, 0, 0])
+    mov_ins.set_operands([0, 0, checksum_reg])
     instrs.append(mov_ins)
     
     # Add test instruction
-    instrs.append(instruction)
+    instrs.append(_materialize_instruction(target, instruction))
     
     # Update checksum
     add_ins = target.new_instruction("ADD_X_REG_V0")
-    add_ins.set_operands([checksum_reg, checksum_reg, checksum_reg])
+    add_ins.set_operands([0, checksum_reg, 0, checksum_reg, checksum_reg])
     instrs.append(add_ins)
     
     # Verify checksum (will be done by wrapper)
@@ -156,25 +193,26 @@ def _generate_checksum_test(target, instruction):
 def _generate_redundant_test(target, instruction):
     """Generate redundant computation test."""
     instrs = []
-    
+
     # Execute instruction twice and compare results
-    instrs.append(instruction)
+    instrs.append(_materialize_instruction(target, instruction))
     
     # Save result
     save_reg = target.registers["X10"]
-    mov_ins = target.new_instruction("ADD_X_REG_V0")
-    mov_ins.set_operands([save_reg, target.registers["X0"], target.registers["XZR"]])
-    instrs.append(mov_ins)
-    
+    instrs.extend(target.isa._copy_register(save_reg, target.registers["X0"]))
+
     # Execute again
-    instrs.append(instruction)
-    
+    instrs.append(_materialize_instruction(target, instruction))
+
     # Compare
+    cmp_reg = target.registers["X11"]
     cmp_ins = target.new_instruction("SUBS_X_REG_V0")
     cmp_ins.set_operands([
-        target.registers["XZR"],
+        0,
+        save_reg,
+        0,
         target.registers["X0"],
-        save_reg
+        cmp_reg,
     ])
     instrs.append(cmp_ins)
     
@@ -193,12 +231,12 @@ def _generate_boundary_test(target, instruction):
         set_instrs = target.isa.set_register(
             target.registers["X0"],
             value,
-            microprobe.code.context.Context()
+            Context()
         )
         instrs.extend(set_instrs)
-        
+
         # Execute instruction
-        instrs.append(instruction)
+        instrs.append(_materialize_instruction(target, instruction))
         
         # Check result validity
         # (wrapper will add verification code)

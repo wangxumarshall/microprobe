@@ -70,6 +70,8 @@ class InstructionPool:
         self.instructions = {}
         self.categories = defaultdict(list)
         self.risk_levels = defaultdict(list)
+        self.sdc_scores = {}
+        self.metadata = {}
         
         self._categorize_instructions()
     
@@ -89,22 +91,79 @@ class InstructionPool:
             # 按风险等级分类
             risk = self._get_instruction_risk(instr)
             self.risk_levels[risk].append(instr)
+
+            self.metadata[instr.name] = {
+                "category": category,
+                "risk": risk,
+                "touches_memory": category == "memory",
+                "touches_flags": mnemonic.upper().endswith("S")
+                or mnemonic.upper() in {"CCMP", "CCMN", "ANDS", "BICS"},
+                "is_control": category == "branch",
+            }
+            self.sdc_scores[instr.name] = self._get_sdc_score(instr)
     
     def _get_instruction_category(self, instr: InstructionType) -> str:
         """获取指令功能类别"""
         mnemonic = instr.mnemonic.upper()
+        name = instr.name.upper()
         
         if mnemonic.startswith(('ADD', 'SUB', 'MUL', 'DIV', 'NEG')):
             return 'arithmetic'
+        elif mnemonic.startswith(('ADC', 'SBC', 'NGC', 'CCMP', 'CCMN')):
+            return 'arithmetic'
         elif mnemonic.startswith(('AND', 'ORR', 'EOR', 'XOR', 'NOT')):
+            return 'logical'
+        elif mnemonic.startswith(('BIC', 'BFX', 'BFM', 'EXTR', 'LSL', 'LSR', 'ASR')):
             return 'logical'
         elif mnemonic.startswith(('LD', 'ST', 'LDR', 'STR')):
             return 'memory'
         elif mnemonic.startswith(('B', 'BR', 'CALL', 'RET')):
             return 'branch'
-        elif mnemonic.startswith(('FADD', 'FSUB', 'FMUL', 'FDIV')):
+        elif mnemonic.startswith(('CB', 'TB')):
+            return 'branch'
+        elif mnemonic.startswith(('CS', 'CSEL', 'CINC', 'CINV', 'CNEG', 'CSET')):
+            return 'condition'
+        elif mnemonic.startswith(
+            (
+                'FADD',
+                'FSUB',
+                'FMUL',
+                'FDIV',
+                'FMADD',
+                'FMSUB',
+                'FNMADD',
+                'FNMSUB',
+                'FCVT',
+                'FCMP',
+                'FCMPE',
+                'FABS',
+                'FNEG',
+                'FSQRT',
+                'FMOV',
+            )
+        ):
             return 'floating'
-        elif mnemonic.startswith(('V', 'SIMD')):
+        elif (
+            '_V_' in name
+            or mnemonic.startswith(('LD1', 'ST1', 'DUP'))
+            or mnemonic in {
+                'MLA',
+                'MLS',
+                'AND',
+                'ORR',
+                'EOR',
+                'BIC',
+                'NOT',
+                'SHL',
+                'SSHR',
+                'USHR',
+                'CMEQ',
+                'CMGT',
+                'CMGE',
+                'CMHI',
+                'CMHS',
+            }
+        ):
             return 'simd'
         else:
             return 'other'
@@ -119,6 +178,7 @@ class InstructionPool:
             'DC', 'IC', 'TLBI',  # 缓存/TLB操作
             'MSR', 'MRS',  # 系统寄存器访问
             'SVC', 'HVC', 'SMC',  # 异常调用
+            'BRK', 'HLT',
         ]
         
         # 中风险指令：可能导致数据不一致
@@ -126,6 +186,7 @@ class InstructionPool:
             'LDP', 'STP',  # 多寄存器加载存储
             'LDAXR', 'STLXR',  # 带屏障的原子操作
             'PRFM',  # 预取指令
+            'CBZ', 'CBNZ', 'TBZ', 'TBNZ', 'B.',
         ]
         
         for keyword in high_risk_keywords:
@@ -137,6 +198,28 @@ class InstructionPool:
                 return 'medium'
         
         return 'low'
+
+    def _get_sdc_score(self, instr: InstructionType) -> int:
+        """Estimate how useful an instruction is for exposing silent data corruption."""
+        mnemonic = instr.mnemonic.upper()
+        score = 1
+
+        if any(token in mnemonic for token in ['LDR', 'STR', 'LDP', 'STP', 'LD', 'ST']):
+            score += 4
+        if any(token in mnemonic for token in ['MUL', 'DIV', 'ADC', 'SBC', 'EXTR']):
+            score += 3
+        if any(token in mnemonic for token in ['FMADD', 'FMSUB', 'FNMADD', 'FNMSUB', 'MLA', 'MLS']):
+            score += 4
+        if self._get_instruction_category(instr) == 'simd':
+            score += 2
+        if mnemonic.endswith('S') or mnemonic in {'CSEL', 'CSINC', 'CSINV', 'CSNEG'}:
+            score += 3
+        if mnemonic.startswith(('B', 'CB', 'TB')):
+            score += 1
+        if mnemonic.startswith(('MOVZ', 'MOVK', 'MOVN')):
+            score += 1
+
+        return score
     
     def get_instructions_by_category(self, category: str) -> List[InstructionType]:
         """获取指定类别的指令"""
@@ -152,8 +235,36 @@ class InstructionPool:
             pool = self.categories.get(category, [])
         else:
             pool = list(self.instructions.values())
-        
-        return random.sample(pool, min(n, len(pool)))
+
+        if not pool or n <= 0:
+            return []
+
+        weighted_pool = []
+        for instr in pool:
+            weighted_pool.extend([instr] * max(1, self.sdc_scores.get(instr.name, 1)))
+
+        return [random.choice(weighted_pool) for _ in range(n)]
+
+    def get_similar_instruction(self, instr: InstructionType) -> InstructionType:
+        """Pick a replacement from the same category when possible."""
+        category = self.metadata.get(instr.name, {}).get("category")
+        if category:
+            pool = [candidate for candidate in self.categories.get(category, []) if candidate.name != instr.name]
+            if pool:
+                return random.choice(pool)
+        return random.choice(list(self.instructions.values()))
+
+    def get_top_instructions(self, category: Optional[str] = None, limit: int = 8) -> List[InstructionType]:
+        """Return the highest SDC-sensitivity instructions in a category."""
+        if category:
+            pool = self.categories.get(category, [])
+        else:
+            pool = list(self.instructions.values())
+
+        return sorted(
+            pool,
+            key=lambda instr: (-self.sdc_scores.get(instr.name, 0), instr.name),
+        )[:limit]
     
     def get_instruction_combinations(self, length: int, max_combinations: int = 10000) -> List[List[InstructionType]]:
         """获取指令组合"""
@@ -217,13 +328,17 @@ class MutationEngine:
             return sequence
         
         idx = random.randint(0, len(sequence) - 1)
-        new_instr = random.choice(list(self.pool.instructions.values()))
+        new_instr = self.pool.get_similar_instruction(sequence[idx])
         sequence[idx] = new_instr
         return sequence
     
     def _mutate_insert(self, sequence: List[InstructionType]) -> List[InstructionType]:
         """插入变异：随机插入一条指令"""
-        new_instr = random.choice(list(self.pool.instructions.values()))
+        if len(sequence) > 0 and random.random() < 0.7:
+            pivot = random.choice(sequence)
+            new_instr = self.pool.get_similar_instruction(pivot)
+        else:
+            new_instr = random.choice(list(self.pool.instructions.values()))
         idx = random.randint(0, len(sequence))
         sequence.insert(idx, new_instr)
         return sequence
@@ -367,19 +482,17 @@ class SDCDetector:
         
         return detection_code
     
-    def get_detection_strategy(self, strategy: str) -> List[str]:
+    def get_detection_strategy(self, strategy: str, sequence_length: int = 0) -> List[str]:
         """获取指定的SDC检测策略代码"""
-        strategies = {
-            'checksum': self.inject_checksum,
-            'redundant': self.inject_redundant_execution,
-            'boundary': self.inject_boundary_check,
-            'canary': self.inject_memory_canary,
-        }
-        
-        if strategy in strategies:
-            return strategies[strategy]()
-        else:
-            return []
+        if strategy == 'checksum':
+            return self.inject_checksum(sequence_length)
+        if strategy == 'redundant':
+            return self.inject_redundant_execution()
+        if strategy == 'boundary':
+            return self.inject_boundary_check()
+        if strategy == 'canary':
+            return self.inject_memory_canary()
+        return []
 
 
 class SDCFuzzingGenerator:
@@ -393,6 +506,9 @@ class SDCFuzzingGenerator:
         self.target_name = target_name
         self.output_dir = output_dir
         self.config = config or self._default_config()
+
+        if self.config.get('seed') is not None:
+            random.seed(self.config['seed'])
         
         # 加载目标
         LOG.info(f"Loading target: {target_name}")
@@ -424,75 +540,153 @@ class SDCFuzzingGenerator:
             'batch_size': 100,
             'compress_output': True,
             'seed': None,
+            'high_risk_ratio': 0.1,
+            'generation_profiles': [
+                'arithmetic_chain',
+                'flag_chain',
+                'memory_chain',
+                'mixed_core',
+                'stress_mix',
+            ],
         }
+
+    def _available_categories(self) -> List[str]:
+        base = ['arithmetic', 'logical', 'memory', 'condition', 'branch', 'floating', 'simd']
+        return [category for category in base if self.instruction_pool.categories.get(category)]
+
+    def _pick_from_category(
+        self, category: str, fallback: Optional[List[str]] = None
+    ) -> Optional[InstructionType]:
+        candidates = self.instruction_pool.get_top_instructions(category, limit=12)
+        if candidates:
+            return random.choice(candidates)
+
+        for alt in fallback or []:
+            candidates = self.instruction_pool.get_top_instructions(alt, limit=12)
+            if candidates:
+                return random.choice(candidates)
+        return None
+
+    def _build_arithmetic_chain(self, length: int) -> List[InstructionType]:
+        sequence = []
+        for _ in range(length):
+            instr = self._pick_from_category('arithmetic', ['logical', 'condition'])
+            if instr is not None:
+                sequence.append(instr)
+        return sequence
+
+    def _build_flag_chain(self, length: int) -> List[InstructionType]:
+        sequence = []
+        flag_sources = [
+            instr for instr in self.instruction_pool.get_top_instructions(limit=32)
+            if self.instruction_pool.metadata.get(instr.name, {}).get("touches_flags")
+        ]
+        conditionals = self.instruction_pool.get_top_instructions('condition', limit=16)
+        logicals = self.instruction_pool.get_top_instructions('logical', limit=16)
+
+        while len(sequence) < length:
+            if flag_sources:
+                sequence.append(random.choice(flag_sources))
+            if len(sequence) < length and conditionals:
+                sequence.append(random.choice(conditionals))
+            if len(sequence) < length and logicals:
+                sequence.append(random.choice(logicals))
+            if not flag_sources and not conditionals and not logicals:
+                break
+
+        return sequence[:length]
+
+    def _build_memory_chain(self, length: int) -> List[InstructionType]:
+        sequence = []
+        memory = self.instruction_pool.get_top_instructions('memory', limit=16)
+        arithmetic = self.instruction_pool.get_top_instructions('arithmetic', limit=16)
+        logical = self.instruction_pool.get_top_instructions('logical', limit=16)
+
+        while len(sequence) < length:
+            if arithmetic:
+                sequence.append(random.choice(arithmetic))
+            if len(sequence) < length and memory:
+                sequence.append(random.choice(memory))
+            if len(sequence) < length and logical:
+                sequence.append(random.choice(logical))
+            if not arithmetic and not memory and not logical:
+                break
+
+        return sequence[:length]
+
+    def _build_mixed_core(self, length: int) -> List[InstructionType]:
+        sequence = []
+        categories = [category for category in ['arithmetic', 'logical', 'memory', 'condition', 'branch'] if self.instruction_pool.categories.get(category)]
+        if not categories:
+            return []
+
+        while len(sequence) < length:
+            for category in categories:
+                instr = self._pick_from_category(category, ['arithmetic', 'logical'])
+                if instr is not None:
+                    sequence.append(instr)
+                if len(sequence) >= length:
+                    break
+        return sequence[:length]
+
+    def _build_stress_mix(self, length: int) -> List[InstructionType]:
+        pool = sorted(
+            self.instruction_pool.instructions.values(),
+            key=lambda instr: (-self.instruction_pool.sdc_scores.get(instr.name, 0), instr.name),
+        )
+        if not pool:
+            return []
+        return [random.choice(pool[: max(1, min(12, len(pool)))]) for _ in range(length)]
+
+    def _build_sequence_for_profile(self, profile: str, length: int) -> List[InstructionType]:
+        builders = {
+            'arithmetic_chain': self._build_arithmetic_chain,
+            'flag_chain': self._build_flag_chain,
+            'memory_chain': self._build_memory_chain,
+            'mixed_core': self._build_mixed_core,
+            'stress_mix': self._build_stress_mix,
+        }
+
+        builder = builders.get(profile, self._build_mixed_core)
+        sequence = builder(length)
+
+        if not sequence:
+            return self.instruction_pool.get_random_instructions(length)
+
+        if len(sequence) < length:
+            sequence.extend(
+                self.instruction_pool.get_random_instructions(length - len(sequence))
+            )
+
+        return sequence[:length]
     
     def generate_base_sequences(self) -> List[List[InstructionType]]:
         """
         生成基础指令序列
         
         策略：
-        1. 从不同类别随机组合
-        2. 按风险等级混合
-        3. 特定模式序列（如内存密集型、计算密集型）
+        1. 用覆盖驱动 profile 保证算术/逻辑/条件/内存/控制流都能进入样本
+        2. 优先选择更容易暴露 silent data corruption 的指令
+        3. 保留一部分随机性，以持续探索新组合
         """
         base_sequences = []
-        
-        # 策略1：随机组合
-        num_random = self.config['num_sequences'] // 4
-        for _ in range(num_random):
+        profiles = self.config.get('generation_profiles') or ['mixed_core']
+
+        for idx in range(self.config['num_sequences']):
+            profile = profiles[idx % len(profiles)]
             length = random.randint(
                 self.config['sequence_length_min'],
                 self.config['sequence_length_max']
             )
-            sequence = self.instruction_pool.get_random_instructions(length)
-            base_sequences.append(sequence)
-        
-        # 策略2：按类别生成
-        categories = ['arithmetic', 'logical', 'memory', 'branch', 'floating', 'simd']
-        for category in categories:
-            num_per_category = self.config['num_sequences'] // (len(categories) * 2)
-            for _ in range(num_per_category):
-                length = random.randint(
-                    self.config['sequence_length_min'],
-                    self.config['sequence_length_max']
-                )
-                sequence = self.instruction_pool.get_random_instructions(length, category)
+            sequence = self._build_sequence_for_profile(profile, length)
+            if sequence:
                 base_sequences.append(sequence)
-        
-        # 策略3：混合风险等级
-        for risk in ['low', 'medium', 'high']:
-            num_per_risk = self.config['num_sequences'] // 12
-            for _ in range(num_per_risk):
-                length = random.randint(
-                    self.config['sequence_length_min'],
-                    self.config['sequence_length_max']
-                )
-                pool = self.instruction_pool.get_instructions_by_risk(risk)
-                if pool:
-                    sequence = random.choices(pool, k=length)
-                    base_sequences.append(sequence)
-        
-        # 策略4：特定模式
-        # 内存密集型
-        memory_instrs = self.instruction_pool.get_instructions_by_category('memory')
-        if memory_instrs:
-            for _ in range(self.config['num_sequences'] // 8):
-                length = random.randint(20, 50)
-                sequence = random.choices(memory_instrs, k=length)
-                base_sequences.append(sequence)
-        
-        # 计算密集型
-        compute_instrs = (
-            self.instruction_pool.get_instructions_by_category('arithmetic') +
-            self.instruction_pool.get_instructions_by_category('floating')
+
+        LOG.info(
+            "Generated %d base sequences using profiles: %s",
+            len(base_sequences),
+            ", ".join(profiles),
         )
-        if compute_instrs:
-            for _ in range(self.config['num_sequences'] // 8):
-                length = random.randint(20, 50)
-                sequence = random.choices(compute_instrs, k=length)
-                base_sequences.append(sequence)
-        
-        LOG.info(f"Generated {len(base_sequences)} base sequences")
         return base_sequences
     
     def generate_mutants(self, base_sequences: List[List[InstructionType]]) -> List[List[InstructionType]]:
@@ -534,14 +728,6 @@ class SDCFuzzingGenerator:
                 reset=kwargs.get('reset', False)
             )
             
-            # 创建synthesizer
-            import microprobe.code
-            synthesizer = microprobe.code.Synthesizer(
-                self.target,
-                wrapper,
-                value=kwargs.get('value', 0)
-            )
-            
             # 应用策略
             policy_kwargs = {
                 'instructions': sequence,
@@ -551,17 +737,24 @@ class SDCFuzzingGenerator:
                 'endless': kwargs.get('endless', False),
             }
             
-            policy.apply(self.target, wrapper, **policy_kwargs)
-            
-            # 生成代码
-            benchmark = synthesizer.generate()
-            
-            # 写入文件
-            with open(output_file, 'w') as f:
-                f.write(benchmark)
+            synthesizer = policy.apply(self.target, wrapper, **policy_kwargs)
+            benchmark = synthesizer.synthesize()
+            synthesizer.save(output_file, benchmark)
             
             # 更新统计
             self.stats['total_generated'] += 1
+            seen_categories = {
+                self.instruction_pool.metadata.get(instr.name, {}).get("category", "other")
+                for instr in sequence
+            }
+            seen_risks = {
+                self.instruction_pool.metadata.get(instr.name, {}).get("risk", "low")
+                for instr in sequence
+            }
+            for category in seen_categories:
+                self.stats['by_category'][category] += 1
+            for risk in seen_risks:
+                self.stats['by_risk'][risk] += 1
             
             return True
             
