@@ -309,73 +309,81 @@
   Mnemonic: "FMADD"
   Description: "Floating-point Multiply-Add (Double precision)"
   Opcode: "00011111"
-  Format: "DP_3REG"
+  Format: "FP_DP_3REG"
   Operands:
     type: ['1', 'type', '?']
-    opc: ['0', 'opc', '?']
+    o1: ['0', 'o1', '?']
+    o0: ['0', 'o0', '?']
 
 - Name: "FMADD_S_V0"
   Mnemonic: "FMADD"
   Description: "Floating-point Multiply-Add (Single precision)"
   Opcode: "00011111"
-  Format: "DP_3REG"
+  Format: "FP_DP_3REG"
   Operands:
     type: ['0', 'type', '?']
-    opc: ['0', 'opc', '?']
+    o1: ['0', 'o1', '?']
+    o0: ['0', 'o0', '?']
 
 # FMSUB
 - Name: "FMSUB_D_V0"
   Mnemonic: "FMSUB"
   Description: "Floating-point Multiply-Subtract (Double precision)"
   Opcode: "00011111"
-  Format: "DP_3REG"
+  Format: "FP_DP_3REG"
   Operands:
     type: ['1', 'type', '?']
-    opc: ['1', 'opc', '?']
+    o1: ['0', 'o1', '?']
+    o0: ['1', 'o0', '?']
 
 - Name: "FMSUB_S_V0"
   Mnemonic: "FMSUB"
   Description: "Floating-point Multiply-Subtract (Single precision)"
   Opcode: "00011111"
-  Format: "DP_3REG"
+  Format: "FP_DP_3REG"
   Operands:
     type: ['0', 'type', '?']
-    opc: ['1', 'opc', '?']
+    o1: ['0', 'o1', '?']
+    o0: ['1', 'o0', '?']
 
 # FNMADD
 - Name: "FNMADD_D_V0"
   Mnemonic: "FNMADD"
   Description: "Floating-point Negate Multiply-Add (Double precision)"
   Opcode: "00011111"
-  Format: "DP_3REG"
+  Format: "FP_DP_3REG"
   Operands:
     type: ['1', 'type', '?']
-    opc: ['2', 'opc', '?']
+    o1: ['0', 'o1', '?']
+    o0: ['2', 'o0', '?']
 
 - Name: "FNMADD_S_V0"
   Mnemonic: "FNMADD"
   Description: "Floating-point Negate Multiply-Add (Single precision)"
   Opcode: "00011111"
-  Format: "DP_3REG"
+  Format: "FP_DP_3REG"
   Operands:
     type: ['0', 'type', '?']
-    opc: ['2', 'opc', '?']
+    o1: ['0', 'o1', '?']
+    o0: ['2', 'o0', '?']
 
 # FNMSUB
 - Name: "FNMSUB_D_V0"
   Mnemonic: "FNMSUB"
   Description: "Floating-point Negate Multiply-Subtract (Double precision)"
   Opcode: "00011111"
-  Format: "DP_3REG"
+  Format: "FP_DP_3REG"
   Operands:
     type: ['1', 'type', '?']
-    opc: ['3', 'opc', '?']
+    o1: ['0', 'o1', '?']
+    o0: ['3', 'o0', '?']
 
 - Name: "FNMSUB_S_V0"
   Mnemonic: "FNMSUB"
   Description: "Floating-point Negate Multiply-Subtract (Single precision)"
   Opcode: "00011111"
-  Format: "DP_3REG"
+  Format: "FP_DP_3REG"
   Operands:
     type: ['0', 'type', '?']
-    opc: ['3', 'opc', '?']
+    o1: ['0', 'o1', '?']
+    o0: ['3', 'o0', '?']

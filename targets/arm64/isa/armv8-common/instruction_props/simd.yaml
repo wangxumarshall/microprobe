@@ -298,3 +298,67 @@
     Q: ['1', 'Q', '?']
     U: ['0', 'U', '?']
     size: ['0', 'size', '?']
+
+# ==================== Vector FMA (SDC-Critical) ====================
+
+# FMLA (Vector, Floating-point Multiply-Add)
+- Name: "FMLA_V_2S_V0"
+  Mnemonic: "FMLA"
+  Description: "Floating-point Multiply-Add (2xSingle)"
+  Opcode: "00001110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['0', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['0', 'size', '?']
+
+- Name: "FMLA_V_4S_V0"
+  Mnemonic: "FMLA"
+  Description: "Floating-point Multiply-Add (4xSingle)"
+  Opcode: "00101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['0', 'size', '?']
+
+- Name: "FMLA_V_2D_V0"
+  Mnemonic: "FMLA"
+  Description: "Floating-point Multiply-Add (2xDouble)"
+  Opcode: "01101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['0', 'U', '?']
+    size: ['1', 'size', '?']
+
+# FMLS (Vector, Floating-point Multiply-Subtract)
+- Name: "FMLS_V_2S_V0"
+  Mnemonic: "FMLS"
+  Description: "Floating-point Multiply-Subtract (2xSingle)"
+  Opcode: "00001110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['0', 'Q', '?']
+    U: ['1', 'U', '?']
+    size: ['0', 'size', '?']
+
+- Name: "FMLS_V_4S_V0"
+  Mnemonic: "FMLS"
+  Description: "Floating-point Multiply-Subtract (4xSingle)"
+  Opcode: "00101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['1', 'U', '?']
+    size: ['0', 'size', '?']
+
+- Name: "FMLS_V_2D_V0"
+  Mnemonic: "FMLS"
+  Description: "Floating-point Multiply-Subtract (2xDouble)"
+  Opcode: "01101110"
+  Format: "SIMD_DP_3REG"
+  Operands:
+    Q: ['1', 'Q', '?']
+    U: ['1', 'U', '?']
+    size: ['1', 'size', '?']

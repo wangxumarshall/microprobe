@@ -305,6 +305,32 @@
   - "0_5"
   Assembly: "OPC Vn, Vm"
 
+- Name: "FP_DP_3REG"
+  Description: "Floating Point Data Processing (3 Registers - FMA)"
+  Fields:
+  - "type"
+  - "o1"
+  - "o0"
+  - "Vm"
+  - "0_5"
+  - "Va"
+  - "Vn"
+  - "Vd"
+  Assembly: "OPC Vd, Vn, Vm, Va"
+
+- Name: "FP_DP_3REG_SCALAR"
+  Description: "Scalar Floating Point Data Processing (3 Registers - FMA)"
+  Fields:
+  - "type"
+  - "o1"
+  - "o0"
+  - "Vm"
+  - "0_5"
+  - "Va"
+  - "Vn"
+  - "Vd"
+  Assembly: "OPC Dd, Dn, Dm, Da"
+
 - Name: "SIMD_DP_3REG"
   Description: "SIMD Data Processing (3 Registers)"
   Fields:

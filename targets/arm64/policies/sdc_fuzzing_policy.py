@@ -41,7 +41,7 @@ def _target_looks_like_arm64(target):
 class SDCSensitiveAnalyzer(object):
     """Pick ARM64 instructions that are more likely to expose silent faults."""
 
-    _FMA_MNEMONICS = {"FMADD", "FMSUB", "FNMADD", "FNMSUB"}
+    _FMA_MNEMONICS = {"FMADD", "FMSUB", "FNMADD", "FNMSUB", "FMLA", "FMLS"}
     _PAIR_MEMORY_MNEMONICS = {"LDP", "STP"}
     _LSE_PREFIXES = ("CAS", "LDADD", "LDXR", "STXR", "LDAXR", "STLXR")
 

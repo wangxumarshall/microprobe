@@ -19,12 +19,14 @@ from __future__ import absolute_import
 
 # Built-in modules
 import collections
+import fnmatch
 import inspect
 import os
 
 # Own modules
 from microprobe import MICROPROBE_RC
 from microprobe.exceptions import MicroprobePolicyError
+from microprobe.target import _DEFINITION_TUPLE_ALIASES
 from microprobe.utils.imp import load_source
 from microprobe.utils.logger import get_logger
 from microprobe.utils.misc import findfiles
@@ -34,6 +36,28 @@ from microprobe.utils.misc import findfiles
 LOG = get_logger(__name__)
 __all__ = ["find_policy"]
 _POLICY_ATTRIBUTES = ["NAME", "DESCRIPTION", "SUPPORTED_TARGETS", "policy"]
+
+
+def _normalize_target_name(target_name):
+    return _DEFINITION_TUPLE_ALIASES.get(target_name, target_name)
+
+
+def _target_matches_supported_list(target_name, supported_targets):
+    normalized_target = _normalize_target_name(target_name)
+
+    for supported_target in supported_targets:
+        if supported_target == "all":
+            return True
+
+        normalized_supported = _normalize_target_name(supported_target)
+        for candidate_target in [target_name, normalized_target]:
+            for candidate_supported in [supported_target, normalized_supported]:
+                if candidate_target == candidate_supported:
+                    return True
+                if fnmatch.fnmatch(candidate_target, candidate_supported):
+                    return True
+
+    return False
 
 
 # Functions
@@ -60,9 +84,8 @@ def find_policy(target_name, policy_name):
         ):
             continue
 
-        if (
-            target_name not in pdef["SUPPORTED_TARGETS"]
-            and "all" not in pdef["SUPPORTED_TARGETS"]
+        if not _target_matches_supported_list(
+            target_name, pdef["SUPPORTED_TARGETS"]
         ):
             continue
 

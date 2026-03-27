@@ -306,6 +306,25 @@
   Size: 2
   IO: "?"
 
+- Name: o0
+  Description: FMA opcode bit 0
+  Show: False
+  Size: 1
+  IO: "?"
+
+- Name: o1
+  Description: FMA opcode bit 1
+  Show: False
+  Size: 1
+  IO: "?"
+
+- Name: Va
+  Description: Accumulator SIMD Register (for FMA)
+  Operand: SIMD_FP_regs
+  Show: True
+  Size: 5
+  IO: "I"
+
 # Bit position for test branch
 - Name: b5
   Description: Bit 5 of bit position

@@ -281,3 +281,57 @@
     A: ['0', 'A', '?']
     R: ['0', 'R', '?']
     opc: ['5', 'opc', '?']
+
+# ==================== LDSMAX, LDSMIN, LDUMAX, LDUMIN ====================
+
+# LDSMAX (Atomic Signed Maximum)
+- Name: "LDSMAX_X_V0"
+  Mnemonic: "LDSMAX"
+  Description: "Atomic Signed Maximum (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['6', 'opc', '?']
+
+# LDSMIN (Atomic Signed Minimum)
+- Name: "LDSMIN_X_V0"
+  Mnemonic: "LDSMIN"
+  Description: "Atomic Signed Minimum (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['7', 'opc', '?']
+
+# LDUMAX (Atomic Unsigned Maximum)
+- Name: "LDUMAX_X_V0"
+  Mnemonic: "LDUMAX"
+  Description: "Atomic Unsigned Maximum (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['10', 'opc', '?']
+
+# LDUMIN (Atomic Unsigned Minimum)
+- Name: "LDUMIN_X_V0"
+  Mnemonic: "LDUMIN"
+  Description: "Atomic Unsigned Minimum (64-bit)"
+  Opcode: "11111000"
+  Format: "ATOMIC"
+  Operands:
+    size: ['3', 'size', '?']
+    V: ['0', 'V', '?']
+    A: ['0', 'A', '?']
+    R: ['0', 'R', '?']
+    opc: ['11', 'opc', '?']
