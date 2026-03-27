@@ -12,14 +12,17 @@
 - [x] 修复 `sdc_fuzzing` / `sdc_detect` 合成主链
 - [x] 修复 ARM64 memory stream 地址物化与原子/访存元数据
 - [x] 验证 `BareMetalDiffWrapper` 与差分 runner 关键入口
-- [ ] 清理提交边界并分别提交 `microprobe` / `mcpat`
+- [x] 让离线生成器在输出 `.c` 时写回 `source_path` / `rendered_path` metadata
+- [x] 为 `mp_sdc_offline_gen.py` 补充 focused pytest 覆盖
+- [ ] 清理提交边界并提交 `microprobe`
 
 ### 当前结论
 1. `armv8_common-armv8_common-aarch64_linux_gcc` 现在可以成功 `import_definition(...)`。
 2. `targets/arm64/policies/sdc_fuzzing_policy.py` 现在可以成功 `synthesize()`，并生成包含 `FMA + LDP/STP + CAS/LSE` 的混合高风险序列。
 3. `targets/arm64/policies/sdc_detect.py` 现在也可完成最小合成。
 4. `BareMetalDiffWrapper` 在绑定真实 benchmark 后可以生成 digest 代码。
-5. 仍需收尾的主要问题不在 ARM64 主链本身，而在提交边界与外部环境：
+5. `targets/generic/tools/mp_sdc_offline_gen.py` 现在会在输出 `.c` 时把 `source_path` 与 `rendered_path` 写回 testcase metadata，便于根目录 campaign 直接消费。
+6. 仍需收尾的主要问题不在 ARM64 主链本身，而在提交边界与外部环境：
    - 根目录 `run_sdc_differential.py` / `sdc_vault.py` 不在任何 git repo 内，无法直接推送到现有远端。
    - `pytest` 本地缺少 `typeguard` 依赖，当前只能用 focused smoke tests 验证。
    - `mcpat/mcpat` 仓库没有现成 gem5 `config.json + stats.txt` 样例，McPAT 默认链本轮只能做代码与接口级复核。

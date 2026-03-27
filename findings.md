@@ -33,6 +33,13 @@
 7. 安全问题：
    - `targets/arm64/tools/a64_isa_audit.py` 的 tar 解包已改为安全提取，避免路径穿越。
 
+8. 离线生成器 metadata 现在可直连外层 campaign：
+   - `targets/generic/tools/mp_sdc_offline_gen.py` 在 `output_dir` 落盘后会写回 `rendered_path` / `rendered_format`。
+   - 当 wrapper 输出的是 `BareMetalDiffWrapper` 这类 `.c` 结果时，metadata 还会同步写入 `source_path`，可被根目录 `sdc_campaign.py` 直接消费。
+
+9. `mp_sdc_offline_gen.py` 已有 focused 测试保护：
+   - 新增用例覆盖 `BareMetalDiffWrapper` 生成 `.c`、metadata 持久化以及 `SDC_DIGEST` scaffold 存在性。
+
 ### 剩余风险 / 待决事项
 
 1. 根目录 `run_sdc_differential.py` 与 `sdc_vault.py` 仍不在任何 git repo 中。

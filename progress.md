@@ -16,6 +16,8 @@
 - ✅ `sdc_detect.py` 最小策略可合成
 - ✅ `BareMetalDiffWrapper` 在绑定 benchmark 后可生成 digest 代码
 - ✅ `run_sdc_differential.py --help` 可运行
+- ✅ `mp_sdc_offline_gen.py` 在输出 `.c` 时会回填 `source_path` / `rendered_path`
+- ✅ 离线生成器 focused pytest 已补齐
 
 **关键验证**:
 1. `import_definition('armv8_common-armv8_common-aarch64_linux_gcc')` 成功。
@@ -40,12 +42,17 @@
    - `sdc_benchmark_body` 存在
    - `sdc_mix_bytes` 存在
    - `end_main()` 中包含 `SDC_DIGEST=...`
+6. `mp_sdc_offline_gen.py` + `BareMetalDiffWrapper` 现在会生成 `.c`，并在 metadata 中写入：
+   - `rendered_path`
+   - `rendered_format=c`
+   - `source_path`
 
 **当前遗留**:
 1. `pytest` 因本地缺少 `typeguard` 无法跑完整收敛。
 2. 根目录 `run_sdc_differential.py` / `sdc_vault.py` 还不在 git 仓库内。
 3. McPAT 仓库缺少内建 ARM64 gem5 样例输入，回归只能做到接口层复核。
 4. ARM64 shifted-register instruction 的汇编字符串虽然已可输出，但还不是完全规范的 GNU AArch64 表示。
+5. 某些 seed 仍可能触发已知的 ARM64 memory index-register 地址物化边角；本轮测试固定在已验证可合成的 seed 上，后续若要做更强随机覆盖，需要继续收敛这条 pass 路径。
 
 ## 会话: 2026-03-26
 

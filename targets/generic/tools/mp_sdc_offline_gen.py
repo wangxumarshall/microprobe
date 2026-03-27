@@ -135,6 +135,10 @@ def _generate_one(task: Dict[str, Any]) -> Dict[str, Any]:
         suffix = ".s" if wrapper_name in {"Assembly", "Arm64AsmWrapper"} else ".c"
         output_file = output_dir / f"{testcase_key}{suffix}"
         output_file.write_text(asm_content, encoding="utf-8")
+        metadata["rendered_path"] = str(output_file.resolve())
+        metadata["rendered_format"] = suffix.lstrip(".")
+        if suffix == ".c":
+            metadata["source_path"] = str(output_file.resolve())
 
     entry = VaultEntry(
         testcase_key=testcase_key,
