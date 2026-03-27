@@ -2077,6 +2077,20 @@ class GenericInstructionType(InstructionType):
                         1,
                     )
 
+                elif assembly_str.find(f" {field.name} ") >= 0:
+
+                    assembly_str = assembly_str.replace(
+                        f" {field.name} ",
+                        f" {next_operand_value().representation} ",
+                        1,
+                    )
+
+                elif assembly_str.endswith(f" {field.name}"):
+
+                    assembly_str = assembly_str[: -len(field.name)] + (
+                        next_operand_value().representation
+                    )
+
                 else:
                     LOG.debug(
                         "%s",

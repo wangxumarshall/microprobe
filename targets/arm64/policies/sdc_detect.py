@@ -9,6 +9,7 @@ from __future__ import absolute_import, print_function
 
 import microprobe.code
 from microprobe.code.context import Context
+from microprobe.code.ins import Instruction
 import microprobe.passes.address
 import microprobe.passes.branch
 import microprobe.passes.initialization
@@ -33,6 +34,22 @@ def _target_looks_like_arm64(target):
     """Best-effort guard until the ARM64 target tuple is normalized."""
     registers = getattr(target, "registers", {})
     return all(reg in registers for reg in ["X0", "SP", "V0", "LR"])
+
+
+def _materialize_instruction(target, instruction):
+    if isinstance(instruction, Instruction):
+        return instruction.copy()
+
+    if hasattr(instruction, "name"):
+        instr = target.new_instruction(instruction.name)
+        for operand in instr.operands():
+            if operand.value is None:
+                operand.set_value(operand.type.random_value(RND))
+        return instr
+
+    raise MicroprobePolicyError(
+        "Expected an ARM64 instruction instance or instruction type"
+    )
 
 
 def policy(target, wrapper, **kwargs):
@@ -157,15 +174,15 @@ def _generate_checksum_test(target, instruction):
     # Initialize checksum register
     checksum_reg = target.registers["X9"]
     mov_ins = target.new_instruction("MOVZ_X_V0")
-    mov_ins.set_operands([checksum_reg, 0, 0])
+    mov_ins.set_operands([0, 0, checksum_reg])
     instrs.append(mov_ins)
     
     # Add test instruction
-    instrs.append(instruction.copy() if hasattr(instruction, "copy") else instruction)
+    instrs.append(_materialize_instruction(target, instruction))
     
     # Update checksum
     add_ins = target.new_instruction("ADD_X_REG_V0")
-    add_ins.set_operands([checksum_reg, checksum_reg, checksum_reg])
+    add_ins.set_operands([0, checksum_reg, 0, checksum_reg, checksum_reg])
     instrs.append(add_ins)
     
     # Verify checksum (will be done by wrapper)
@@ -178,23 +195,24 @@ def _generate_redundant_test(target, instruction):
     instrs = []
 
     # Execute instruction twice and compare results
-    instrs.append(instruction.copy() if hasattr(instruction, "copy") else instruction)
+    instrs.append(_materialize_instruction(target, instruction))
     
     # Save result
     save_reg = target.registers["X10"]
-    mov_ins = target.new_instruction("ADD_X_REG_V0")
-    mov_ins.set_operands([save_reg, target.registers["X0"], target.registers["XZR"]])
-    instrs.append(mov_ins)
-    
+    instrs.extend(target.isa._copy_register(save_reg, target.registers["X0"]))
+
     # Execute again
-    instrs.append(instruction.copy() if hasattr(instruction, "copy") else instruction)
-    
+    instrs.append(_materialize_instruction(target, instruction))
+
     # Compare
+    cmp_reg = target.registers["X11"]
     cmp_ins = target.new_instruction("SUBS_X_REG_V0")
     cmp_ins.set_operands([
-        target.registers["XZR"],
+        0,
+        save_reg,
+        0,
         target.registers["X0"],
-        save_reg
+        cmp_reg,
     ])
     instrs.append(cmp_ins)
     
@@ -218,7 +236,7 @@ def _generate_boundary_test(target, instruction):
         instrs.extend(set_instrs)
 
         # Execute instruction
-        instrs.append(instruction.copy() if hasattr(instruction, "copy") else instruction)
+        instrs.append(_materialize_instruction(target, instruction))
         
         # Check result validity
         # (wrapper will add verification code)

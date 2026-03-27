@@ -47,6 +47,10 @@
 4. `mcpat/mcpat` 仓库内没有现成 ARM64 gem5 样例输入。
    - 当前可确认模板/profile/CLI 接线已落地，但缺少仓库内自带的 `config.json + stats.txt` 回归样本。
 
+5. ARM64 shifted-register assembly 语法仍未完全 canonical。
+   - 当前 `ADD_X_REG_V0` / `SUBS_X_REG_V0` 已可生成字符串，但仍倾向输出 `..., lsl 0` / `..., 0 0` 风格而不是严格的 GNU AArch64 推荐写法。
+   - 这不阻塞当前 `sdc_fuzzing` 主链，但后续若扩大依赖这类 register-shift helper，建议单独收敛 `shift_types` / immediate 表示层。
+
 ## 2026-03-26 ISA审计补充
 
 ### A. 仓库现状与文档一致性

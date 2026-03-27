@@ -45,6 +45,7 @@
 1. `pytest` 因本地缺少 `typeguard` 无法跑完整收敛。
 2. 根目录 `run_sdc_differential.py` / `sdc_vault.py` 还不在 git 仓库内。
 3. McPAT 仓库缺少内建 ARM64 gem5 样例输入，回归只能做到接口层复核。
+4. ARM64 shifted-register instruction 的汇编字符串虽然已可输出，但还不是完全规范的 GNU AArch64 表示。
 
 ## 会话: 2026-03-26
 
