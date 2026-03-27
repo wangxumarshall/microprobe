@@ -332,8 +332,7 @@ def find_isa_definitions(paths: List[str] | None = None):
         try:
             definition = Definition(isafile, isadef["Name"],
                                     isadef["Description"])
-            if (definition not in results
-                    and not definition.name.endswith("common")):
+            if definition not in results:
                 results.append(definition)
         except TypeError as exc:
             # Skip bad definitions

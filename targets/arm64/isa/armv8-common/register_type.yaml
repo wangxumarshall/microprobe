@@ -6,6 +6,7 @@
 - Name: GPR64
   Description: 64-bit General Purpose Register
   Size: 64
+  AddressArithmetic: True
 
 - Name: GPR32
   Description: 32-bit General Purpose Register (lower 32 bits)
@@ -14,6 +15,8 @@
 - Name: SIMD_FP
   Description: SIMD and Floating Point Register (128-bit)
   Size: 128
+  FloatArithmetic: True
+  VectorArithmetic: True
 
 - Name: SPR
   Description: Special Purpose Register

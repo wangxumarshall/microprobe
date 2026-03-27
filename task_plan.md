@@ -1,5 +1,47 @@
 # Microprobe ARM64移植任务规划
 
+## 当前审计会话：2026-03-27 SDC Fuzzing闭环修复与提交准备
+
+### 目标
+围绕 ARM64/Kunpeng920 SDC fuzzing 主线，完成可导入 target、可运行 policy、可生成差分 wrapper、可对接 McPAT 的关键修复；同步记录 findings，并准备按仓库提交远端。
+
+### 本轮阶段
+- [x] 读取仓库状态与远端边界
+- [x] 记录高优先级 findings 并收敛执行计划
+- [x] 修复 ARM64 target import 与 ISA helper 阻塞项
+- [x] 修复 `sdc_fuzzing` / `sdc_detect` 合成主链
+- [x] 修复 ARM64 memory stream 地址物化与原子/访存元数据
+- [x] 验证 `BareMetalDiffWrapper` 与差分 runner 关键入口
+- [ ] 清理提交边界并分别提交 `microprobe` / `mcpat`
+
+### 当前结论
+1. `armv8_common-armv8_common-aarch64_linux_gcc` 现在可以成功 `import_definition(...)`。
+2. `targets/arm64/policies/sdc_fuzzing_policy.py` 现在可以成功 `synthesize()`，并生成包含 `FMA + LDP/STP + CAS/LSE` 的混合高风险序列。
+3. `targets/arm64/policies/sdc_detect.py` 现在也可完成最小合成。
+4. `BareMetalDiffWrapper` 在绑定真实 benchmark 后可以生成 digest 代码。
+5. 仍需收尾的主要问题不在 ARM64 主链本身，而在提交边界与外部环境：
+   - 根目录 `run_sdc_differential.py` / `sdc_vault.py` 不在任何 git repo 内，无法直接推送到现有远端。
+   - `pytest` 本地缺少 `typeguard` 依赖，当前只能用 focused smoke tests 验证。
+   - `mcpat/mcpat` 仓库没有现成 gem5 `config.json + stats.txt` 样例，McPAT 默认链本轮只能做代码与接口级复核。
+
+## 当前审计会话：2026-03-26 ISA准确性/完备性复核
+
+### 目标
+基于 ARM ARM A-profile A64 文档递归核查 `targets/arm64` 的 ISA 定义、生成策略和测试覆盖，修正错误或缺漏，并提升指令序列覆盖率与 SDC 检出能力。
+
+### 本轮阶段
+- [x] 恢复既有上下文与仓库状态
+- [x] 定位 ARM64 目标实现、策略和测试入口
+- [ ] 统计现有 ARM64 指令/格式/操作数覆盖面
+- [ ] 对照 ARM 官方文档核验编码与分类
+- [ ] 修正 ISA 定义与生成策略
+- [ ] 运行测试/自检并更新结论
+
+### 当前发现
+1. `targets/arm64/` 已经落地，和旧计划中“未开始”的状态不一致。
+2. 根目录存在多份“已完成/100%”报告，但尚未核实真实导入能力、编码正确性和覆盖范围。
+3. 本轮任务以真实代码和 ARM 官方文档为准，不以仓库内总结性文档为准。
+
 ## 项目概述
 
 **目标**: 将Microprobe微基准测试框架从PowerPC/RISC-V架构移植到ARM64 (AArch64)架构，实现对ARMv8指令集的100%支持，并实现SDC（Silent Data Corruption）检测用例生成机制。
@@ -218,6 +260,32 @@
 
 ### 任务清单
 - [ ] 编写ARM64移植文档
+
+---
+
+## 阶段九：ARM64 ISA审计与强化 🔄
+
+### 目标
+基于 Arm 官方 A64 机器可读规范审计当前实现的准确性与完备性，并优先修复影响覆盖率、可用性和 SDC 检出率的关键缺陷。
+
+### 任务清单
+- [x] 获取 Arm 官方 A64 XML 规范数据集
+- [x] 量化当前仓库 ARM64 指令覆盖基线
+- [x] 识别 helper/policy 直接依赖但缺失的关键指令
+- [ ] 补齐关键基础指令与 alias（MOV/ADR/ADRP/NOP 等）
+- [ ] 补齐高价值整数/条件选择/位操作指令族
+- [ ] 优化 SDC fuzzing 序列生成策略
+- [ ] 修复生成流程中的功能性缺陷
+- [ ] 完成编码与回归验证
+
+### 关键发现
+1. **覆盖率严重不足**: `targets/arm64/isa/armv8-common/instruction.yaml` 当前仅定义 `56` 个 instruction types、`27` 个唯一助记符；而 Arm 官方 A64 XML 中仅 `general + system` 类就有 `462` 个唯一助记符。
+2. **可用性缺陷**: `targets/arm64/isa/armv8-common/isa.py` 直接引用了当前未定义的 `MOV_X_V0`、`ADRP_X_V0`、`NOP_V0`，导致寄存器设置、地址构造和 NOP 生成路径不完整。
+3. **生成器问题**: `targets/arm64/isa/armv8-common/generator.py` 为空实现；`sdc_fuzzing_generator.py` 当前以随机抽样为主，无法系统覆盖高价值指令组合。
+4. **功能性 bug**: `sdc_fuzzing_generator.py` 在 `generate_single_testcase` 中创建了本地 `Synthesizer`，却没有使用 policy 返回的 synthesizer，实际生成路径不正确。
+5. **验证阻塞**: 项目在 Python 3.12 下受 `src/microprobe/utils/imp.py` 中 `imp` 模块移除影响，阻碍目标导入与自动化验证。
+
+### 状态: 进行中 🔄
 - [ ] 更新用户手册
 - [ ] 创建ARM64示例
 - [ ] 实现ARM64专用工具

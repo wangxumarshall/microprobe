@@ -15,8 +15,8 @@ from microprobe.utils.typeguard_decorator import typeguard_testsuite
 class Arm64RegisterType(GenericRegisterType):
     """ARM64 Register Type implementation."""
     
-    def __init__(self, name, descr, size):
-        super(Arm64RegisterType, self).__init__(name, descr, size)
+    def __init__(self, *args, **kwargs):
+        super(Arm64RegisterType, self).__init__(*args, **kwargs)
     
     def __str__(self):
         return "Arm64RegisterType(%s)" % self.name

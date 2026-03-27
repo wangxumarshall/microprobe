@@ -21,8 +21,8 @@ from microprobe.utils.typeguard_decorator import typeguard_testsuite
 class Arm64OperandReg(OperandReg):
     """ARM64 Register Operand implementation."""
     
-    def __init__(self, name, descr, regs, **kwargs):
-        super(Arm64OperandReg, self).__init__(name, descr, regs, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(Arm64OperandReg, self).__init__(*args, **kwargs)
     
     def __str__(self):
         return "Arm64OperandReg(%s)" % self.name
@@ -32,10 +32,8 @@ class Arm64OperandReg(OperandReg):
 class Arm64OperandImmRange(OperandImmRange):
     """ARM64 Immediate Range Operand implementation."""
     
-    def __init__(self, name, descr, min_val, max_val, **kwargs):
-        super(Arm64OperandImmRange, self).__init__(
-            name, descr, min_val, max_val, **kwargs
-        )
+    def __init__(self, *args, **kwargs):
+        super(Arm64OperandImmRange, self).__init__(*args, **kwargs)
     
     def __str__(self):
         return "Arm64OperandImmRange(%s)" % self.name
@@ -45,8 +43,8 @@ class Arm64OperandImmRange(OperandImmRange):
 class Arm64OperandValueSet(OperandValueSet):
     """ARM64 Value Set Operand implementation."""
     
-    def __init__(self, name, descr, values):
-        super(Arm64OperandValueSet, self).__init__(name, descr, values)
+    def __init__(self, *args, **kwargs):
+        super(Arm64OperandValueSet, self).__init__(*args, **kwargs)
     
     def __str__(self):
         return "Arm64OperandValueSet(%s)" % self.name

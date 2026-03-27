@@ -24,7 +24,10 @@ import pickle
 
 # Third party modules
 import cachetools
-import fasteners
+try:
+    import fasteners
+except ImportError:  # pragma: no cover - optional dependency
+    fasteners = None
 
 # Own modules
 from microprobe import MICROPROBE_RC
@@ -39,6 +42,36 @@ __all__ = [
     "write_default_cache_data", "write_cache_data", "cache_file",
     "rm_default_cache_data", "rm_cache_data"
 ]
+
+
+class _DummyLock:
+    """Fallback lock used when optional inter-process locking is unavailable."""
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+
+class _DummyReaderWriterLock:
+    """Fallback reader/writer lock for single-process execution."""
+
+    def __init__(self, _filename):
+        pass
+
+    def read_lock(self):
+        return _DummyLock()
+
+    def acquire_write_lock(self, timeout=None):
+        del timeout
+        return True
+
+
+def _new_lock(filename):
+    if fasteners is None:
+        return _DummyReaderWriterLock(filename)
+    return fasteners.InterProcessReaderWriterLock(filename)
 
 
 # Functions
@@ -94,7 +127,7 @@ def read_cache_data(cachename):
 
     """
 
-    lock = fasteners.InterProcessReaderWriterLock(cachename + ".lock")
+    lock = _new_lock(cachename + ".lock")
     try:
         with lock.read_lock():
             LOG.debug("Reading cache file: %s", cachename)
@@ -178,7 +211,7 @@ def write_cache_data(filename, data, data_reload=False):
             else:
                 raise NotImplementedError
 
-    lock = fasteners.InterProcessReaderWriterLock(filename + ".lock")
+    lock = _new_lock(filename + ".lock")
 
     try:
         if lock.acquire_write_lock(timeout=10):

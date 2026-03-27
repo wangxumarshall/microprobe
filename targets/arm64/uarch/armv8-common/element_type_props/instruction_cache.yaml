@@ -1,0 +1,7 @@
+---
+- Name: instruction_cache
+  Description: Boolean indicating that the element is an instruction cache
+  Default: False
+  Values:
+    L1I: True
+    L2: True

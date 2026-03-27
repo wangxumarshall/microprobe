@@ -12,7 +12,7 @@
   - "immlo"
   - "immhi"
   - "Rd"
-  Assembly: "OPC Rd, label"
+  Assembly: "OPC Rd, immhi"
 
 - Name: "ADD_SUB_IMM"
   Description: "Add/Subtract (Immediate)"
@@ -46,7 +46,7 @@
   - "hw"
   - "imm16"
   - "Rd"
-  Assembly: "OPC Rd, imm16, shift"
+  Assembly: "OPC Rd, imm16, hw"
 
 - Name: "BITFIELD_IMM"
   Description: "Bitfield (Immediate)"
@@ -106,6 +106,7 @@
   Description: "Multiply/Divide"
   Fields:
   - "sf"
+  - "opc"
   - "0_1"
   - "0_14"
   - "Rm"
@@ -117,14 +118,15 @@
 - Name: "DP_3REG"
   Description: "Data Processing (3 Registers)"
   Fields:
+  - "type"
   - "sf"
   - "opc"
   - "0_1"
-  - "Rm"
+  - "Vm"
   - "0_10"
-  - "Rn"
-  - "Rd"
-  Assembly: "OPC Rd, Rn, Rm"
+  - "Vn"
+  - "Vd"
+  Assembly: "OPC Vd, Vn, Vm"
 
 # Load/Store
 
@@ -144,6 +146,8 @@
 - Name: "LOAD_STORE_REG"
   Description: "Load/Store (Register)"
   Fields:
+  - "Q"
+  - "L"
   - "size"
   - "opc"
   - "V"
@@ -175,7 +179,7 @@
   - "0_1"
   - "imm19"
   - "Rt"
-  Assembly: "OPC Rt, label"
+  Assembly: "OPC Rt, imm19"
 
 - Name: "LOAD_STORE_EXCLUSIVE"
   Description: "Load/Store Exclusive"
@@ -199,7 +203,7 @@
   Fields:
   - "opc"
   - "imm26"
-  Assembly: "OPC label"
+  Assembly: "OPC imm26"
 
 - Name: "COND_BRANCH_IMM"
   Description: "Conditional Branch (Immediate)"
@@ -208,7 +212,7 @@
   - "imm19"
   - "0_5"
   - "cond"
-  Assembly: "OPC cond, label"
+  Assembly: "OPC cond, imm19"
 
 - Name: "COMPARE_BRANCH"
   Description: "Compare and Branch"
@@ -219,7 +223,7 @@
   - "imm19"
   - "Rn"
   - "0_5"
-  Assembly: "OPC Rn, label"
+  Assembly: "OPC Rn, imm19"
 
 - Name: "TEST_BRANCH"
   Description: "Test and Branch"
@@ -231,7 +235,7 @@
   - "imm14"
   - "Rn"
   - "0_5"
-  Assembly: "OPC Rn, bit, label"
+  Assembly: "OPC Rn, b40, imm14"
 
 - Name: "UNCOND_BRANCH_REG"
   Description: "Unconditional Branch (Register)"
@@ -273,9 +277,9 @@
   - "0_1"
   - "opc"
   - "0_10"
-  - "Rn"
-  - "Rd"
-  Assembly: "OPC Rd, Rn"
+  - "Vn"
+  - "Vd"
+  Assembly: "OPC Vd, Vn"
 
 - Name: "FP_DP_2REG"
   Description: "Floating Point Data Processing (2 Registers)"
@@ -283,11 +287,11 @@
   - "type"
   - "0_1"
   - "opc"
-  - "Rm"
+  - "Vm"
   - "0_5"
-  - "Rn"
-  - "Rd"
-  Assembly: "OPC Rd, Rn, Rm"
+  - "Vn"
+  - "Vd"
+  Assembly: "OPC Vd, Vn, Vm"
 
 - Name: "FP_COMPARE"
   Description: "Floating Point Compare"
@@ -295,11 +299,11 @@
   - "type"
   - "0_1"
   - "opc"
-  - "Rm"
+  - "Vm"
   - "0_10"
-  - "Rn"
+  - "Vn"
   - "0_5"
-  Assembly: "OPC Rn, Rm"
+  Assembly: "OPC Vn, Vm"
 
 - Name: "SIMD_DP_3REG"
   Description: "SIMD Data Processing (3 Registers)"
@@ -307,8 +311,98 @@
   - "Q"
   - "U"
   - "size"
-  - "Rm"
+  - "Vm"
+  - "opc"
+  - "Vn"
+  - "Vd"
+  Assembly: "OPC Vd, Vn, Vm"
+
+- Name: "ATOMIC"
+  Description: "Atomic memory operation"
+  Fields:
+  - "size"
+  - "V"
+  - "A"
+  - "R"
+  - "opc"
+  - "Rs"
+  - "Rt"
+  - "Rn"
+  Assembly: "OPC Rs, Rt, [Rn]"
+
+- Name: "CAS"
+  Description: "Compare and swap"
+  Fields:
+  - "size"
+  - "V"
+  - "A"
+  - "R"
+  - "opc"
+  - "Rs"
+  - "Rt"
+  - "Rn"
+  Assembly: "OPC Rs, Rt, [Rn]"
+
+- Name: "SIMD_DP_1REG"
+  Description: "SIMD Data Processing (1 Register)"
+  Fields:
+  - "Q"
+  - "U"
+  - "size"
+  - "Vn"
+  - "Vd"
+  Assembly: "OPC Vd, Vn"
+
+- Name: "SIMD_DP_2REG"
+  Description: "SIMD Data Processing (2 Registers)"
+  Fields:
+  - "Q"
+  - "U"
+  - "size"
+  - "Vn"
+  - "Vd"
+  Assembly: "OPC Vd, Vn"
+
+- Name: "SYSTEM"
+  Description: "System control instruction"
+  Fields:
+  - "0_1"
+  Assembly: "OPC"
+
+- Name: "BARRIER"
+  Description: "Barrier instruction"
+  Fields:
+  - "CRm"
+  - "op2"
+  Assembly: "OPC"
+
+- Name: "CACHE"
+  Description: "Cache maintenance instruction"
+  Fields:
+  - "op1"
+  - "CRm"
+  - "op2"
+  Assembly: "OPC"
+
+- Name: "TLB"
+  Description: "TLB maintenance instruction"
+  Fields:
+  - "op1"
+  - "CRm"
+  - "op2"
+  Assembly: "OPC"
+
+- Name: "HINT"
+  Description: "Hint instruction"
+  Fields:
+  - "CRm"
+  - "op2"
+  Assembly: "OPC"
+
+- Name: "PREFETCH"
+  Description: "Prefetch instruction"
+  Fields:
+  - "size"
   - "opc"
   - "Rn"
-  - "Rd"
-  Assembly: "OPC Vd, Vn, Vm"
+  Assembly: "OPC [Rn]"

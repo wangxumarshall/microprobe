@@ -105,6 +105,7 @@ class InstructionPool:
     def _get_instruction_category(self, instr: InstructionType) -> str:
         """获取指令功能类别"""
         mnemonic = instr.mnemonic.upper()
+        name = instr.name.upper()
         
         if mnemonic.startswith(('ADD', 'SUB', 'MUL', 'DIV', 'NEG')):
             return 'arithmetic'
@@ -122,9 +123,47 @@ class InstructionPool:
             return 'branch'
         elif mnemonic.startswith(('CS', 'CSEL', 'CINC', 'CINV', 'CNEG', 'CSET')):
             return 'condition'
-        elif mnemonic.startswith(('FADD', 'FSUB', 'FMUL', 'FDIV')):
+        elif mnemonic.startswith(
+            (
+                'FADD',
+                'FSUB',
+                'FMUL',
+                'FDIV',
+                'FMADD',
+                'FMSUB',
+                'FNMADD',
+                'FNMSUB',
+                'FCVT',
+                'FCMP',
+                'FCMPE',
+                'FABS',
+                'FNEG',
+                'FSQRT',
+                'FMOV',
+            )
+        ):
             return 'floating'
-        elif mnemonic.startswith(('V', 'SIMD')):
+        elif (
+            '_V_' in name
+            or mnemonic.startswith(('LD1', 'ST1', 'DUP'))
+            or mnemonic in {
+                'MLA',
+                'MLS',
+                'AND',
+                'ORR',
+                'EOR',
+                'BIC',
+                'NOT',
+                'SHL',
+                'SSHR',
+                'USHR',
+                'CMEQ',
+                'CMGT',
+                'CMGE',
+                'CMHI',
+                'CMHS',
+            }
+        ):
             return 'simd'
         else:
             return 'other'
@@ -169,6 +208,10 @@ class InstructionPool:
             score += 4
         if any(token in mnemonic for token in ['MUL', 'DIV', 'ADC', 'SBC', 'EXTR']):
             score += 3
+        if any(token in mnemonic for token in ['FMADD', 'FMSUB', 'FNMADD', 'FNMSUB', 'MLA', 'MLS']):
+            score += 4
+        if self._get_instruction_category(instr) == 'simd':
+            score += 2
         if mnemonic.endswith('S') or mnemonic in {'CSEL', 'CSINC', 'CSINV', 'CSNEG'}:
             score += 3
         if mnemonic.startswith(('B', 'CB', 'TB')):

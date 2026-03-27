@@ -5,6 +5,15 @@
 
 # ==================== Data Processing - Immediate ====================
 
+# ADRP (PC-relative page address)
+- Name: "ADRP_X_V0"
+  Mnemonic: "ADRP"
+  Description: "Form PC-relative address to 4KB page"
+  Opcode: "1"
+  Format: "PCREL_ADDR"
+  Operands:
+    opc: ['1', 'opc', '?']
+
 # ADD (Immediate)
 - Name: "ADD_X_IMM_V0"
   Mnemonic: "ADD"
@@ -114,7 +123,6 @@
   Operands:
     sf: ['1', 'sf', '?']
     opc: ['2', 'opc', '?']
-    hw: ['0', 'hw', '?']
 
 - Name: "MOVZ_W_V0"
   Mnemonic: "MOVZ"
@@ -124,7 +132,6 @@
   Operands:
     sf: ['0', 'sf', '?']
     opc: ['2', 'opc', '?']
-    hw: ['0', 'hw', '?']
 
 - Name: "MOVK_X_V0"
   Mnemonic: "MOVK"
@@ -134,7 +141,6 @@
   Operands:
     sf: ['1', 'sf', '?']
     opc: ['3', 'opc', '?']
-    hw: ['0', 'hw', '?']
 
 - Name: "MOVK_W_V0"
   Mnemonic: "MOVK"
@@ -144,7 +150,6 @@
   Operands:
     sf: ['0', 'sf', '?']
     opc: ['3', 'opc', '?']
-    hw: ['0', 'hw', '?']
 
 - Name: "MOVN_X_V0"
   Mnemonic: "MOVN"
@@ -154,7 +159,6 @@
   Operands:
     sf: ['1', 'sf', '?']
     opc: ['0', 'opc', '?']
-    hw: ['0', 'hw', '?']
 
 - Name: "MOVN_W_V0"
   Mnemonic: "MOVN"
@@ -164,7 +168,6 @@
   Operands:
     sf: ['0', 'sf', '?']
     opc: ['0', 'opc', '?']
-    hw: ['0', 'hw', '?']
 
 # ==================== Data Processing - Register ====================
 

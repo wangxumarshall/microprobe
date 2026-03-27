@@ -1,5 +1,74 @@
 # Microprobe架构研究发现
 
+## 2026-03-27 SDC Fuzzing闭环修复结论
+
+### 已修复
+
+1. ARM64 target 无法导入：
+   - `targets/arm64/isa/armv8-common/isa.py` 已补齐 `load/store/compare_and_branch/nop/set_register_to_address` 等最小实现。
+   - `import_definition('armv8_common-armv8_common-aarch64_linux_gcc')` 现已通过。
+
+2. ARM64 指令缺失关键语义属性：
+   - `targets/arm64/isa/armv8-common/instruction.py` 现可推导 `branch`、`branch_relative`、`access_storage`、`privileged`、`trap`、`syscall`。
+   - 对 `LOAD/STORE/PAIR/EXCLUSIVE/ATOMIC/CAS` 格式自动补最小 memory operand 描述。
+
+3. ARM64 内存访存 pass 无法工作：
+   - `src/microprobe/target/isa/instruction.py` 已补 `[...]` 语法的 assembly 替换。
+   - `src/microprobe/code/ins.py` 现在会为常量可见 operand 自动填默认值，避免 helper 生成的指令在 `assembly()` 时崩溃。
+   - `targets/arm64/isa/armv8-common/instruction.py` 现在按字段复制 operand，避免 `Rn` 的 address 标记污染 `Rs/Rt`。
+
+4. ARM64 符号地址无法物化：
+   - `targets/arm64/isa/armv8-common/instruction.yaml` 新增 `ADRP_X_V0`。
+   - `targets/arm64/isa/armv8-common/instruction_field.yaml` 允许 `PCREL_ADDR` 使用可见 `immhi`。
+   - `set_register_to_address()` 现在可发出 `ADRP + ADD :lo12:` 组合来初始化 `SingleMemoryStreamPass` 的全局变量基址。
+
+5. 默认敏感种子分布失衡：
+   - `targets/arm64/policies/sdc_fuzzing_policy.py` 的 `SDCSensitiveAnalyzer` 已改为按 `FMA / pair-memory / LSE` 交织取样。
+   - 默认前 8 个种子现在会混合 `FMADD/FMSUB`、`LDP/STP`、`CAS*`。
+
+6. `BareMetalDiffWrapper` 入口校验不稳：
+   - 通过 `Instruction.__getattr__` 的默认布尔回退，补齐 `disable_asm` / `unsupported` 等常用标志缺省值。
+   - 绑定真实 benchmark 后，wrapper 现在可以生成 `sdc_benchmark_body` 与 `SDC_DIGEST` 代码。
+
+7. 安全问题：
+   - `targets/arm64/tools/a64_isa_audit.py` 的 tar 解包已改为安全提取，避免路径穿越。
+
+### 剩余风险 / 待决事项
+
+1. 根目录 `run_sdc_differential.py` 与 `sdc_vault.py` 仍不在任何 git repo 中。
+   - 这不是功能阻塞，但会影响“全部改动推送远端”的完整性。
+
+2. 向量 load/store 相关格式仍未做端到端执行验证。
+   - 当前默认主链已经依赖并验证了 `FMA + scalar pair + LSE/CAS`，但 `LDR_V/STR_V/LDP_V/STP_V/LD1/ST1` 仍建议后续单独补测试。
+
+3. 本地缺少 `typeguard` 依赖，`pytest` 无法完整收敛。
+   - 本轮主要使用 `py_compile` 与 focused smoke tests 验证。
+
+4. `mcpat/mcpat` 仓库内没有现成 ARM64 gem5 样例输入。
+   - 当前可确认模板/profile/CLI 接线已落地，但缺少仓库内自带的 `config.json + stats.txt` 回归样本。
+
+## 2026-03-26 ISA审计补充
+
+### A. 仓库现状与文档一致性
+
+1. `targets/arm64/` 目录已经存在完整骨架，包含 `isa/armv8-common/`、`env/`、`policies/`、`tests/`、`wrappers/`。
+2. 根目录中的 `task_plan.md` 仍将 ARM64 实现标记为“未开始”，但 `targets/arm64/`、`ARM64_FINAL_REPORT.md`、`ARM64_PORTING_COMPLETE.md` 显示此前已经进行过实现。
+3. 多份报告宣称“100% 完成”与“170+ 指令”，真实性需要直接以 YAML 定义、导入能力和测试结果复核。
+
+### B. 本轮审计的直接入口
+
+1. ISA 定义主入口：
+   - `/Users/wangxu/1-project/sdc-fuzzing/microprobe/targets/arm64/isa/armv8-common/isa.yaml`
+   - `/Users/wangxu/1-project/sdc-fuzzing/microprobe/targets/arm64/isa/armv8-common/instruction.yaml`
+2. 扩展指令属性文件：
+   - `/Users/wangxu/1-project/sdc-fuzzing/microprobe/targets/arm64/isa/armv8-common/instruction_props/`
+3. 生成与检测策略入口：
+   - `/Users/wangxu/1-project/sdc-fuzzing/microprobe/targets/arm64/policies/seq.py`
+   - `/Users/wangxu/1-project/sdc-fuzzing/microprobe/targets/arm64/policies/sdc_detect.py`
+4. 测试入口：
+   - `/Users/wangxu/1-project/sdc-fuzzing/microprobe/targets/arm64/tests/targets/unit_tests.py`
+   - `/Users/wangxu/1-project/sdc-fuzzing/microprobe/targets/arm64/tests/targets/integration_tests.py`
+
 ## 一、项目整体架构
 
 ### 1.1 目录结构分析
@@ -218,6 +287,61 @@ Instruction (指令实例)
 |------|------|
 | mp_seq | 生成指令序列 |
 | mp_seqtune | 调优指令序列 |
+
+---
+
+## 八、ARM64 ISA 审计发现（2026-03-26）
+
+### 8.1 官方规范基线
+
+- 使用 Arm 官方 A64 XML 数据集作为指令覆盖基线：
+  `https://developer.arm.com/-/cdn-downloads/permalink/Exploration-Tools-A64-ISA/ISA_A64/ISA_A64_xml_A_profile-2025-09_ASL1.tar.gz`
+- 该数据集可直接解析出 `mnemonic`、`instr-class`、编码图和 alias 关系，适合自动化审计当前仓库的 ARM64 实现。
+
+### 8.2 当前仓库的 ARM64 覆盖现状
+
+- `targets/arm64/isa/armv8-common/instruction.yaml` 目前只有 `56` 个 instruction entries。
+- 唯一助记符只有 `27` 个：
+  `ADD, ADDS, AND, B, B., BL, BLR, BR, CBNZ, CBZ, EOR, LDP, LDR, MOVK, MOVN, MOVZ, MUL, ORR, RET, SDIV, STP, STR, SUB, SUBS, TBNZ, TBZ, UDIV`
+- Arm 官方 A64 XML 中，仅 `general` 类就有 `388` 个唯一助记符，`system` 类还有 `74` 个唯一助记符。
+- 因此，当前实现并不接近“完整 ARMv8/A64 指令集”，更像一个非常初步的整数/分支子集。
+
+### 8.3 关键缺口
+
+- `isa.py` 中实际依赖但 YAML 未定义的指令：
+  - `MOV_X_V0`
+  - `ADRP_X_V0`
+  - `NOP_V0`
+- 高价值但缺失的基础 general/system 指令族包括：
+  - 地址形成：`ADR`, `ADRP`
+  - 寄存器/别名：`MOV (register)`
+  - 条件选择：`CSEL`, `CSINC`, `CSINV`, `CSNEG`
+  - 带进位算术：`ADC`, `ADCS`
+  - 标志更新逻辑：`ANDS`, `BICS`
+  - 位域/提取：`BFM`, `EXTR`
+  - 屏障/提示：`NOP`, `DMB`, `DSB`, `ISB`
+
+### 8.4 生成质量问题
+
+- `targets/arm64/isa/armv8-common/generator.py` 的 `generate()` 直接返回空列表，ARM64 特定的 immediate/address/helper 生成能力实际上没有落地。
+- `sdc_fuzzing_generator.py` 以随机采样为主，缺少：
+  - 覆盖驱动的类别平衡
+  - 数据依赖链
+  - 标志寄存器相关序列
+  - 地址生成 + load/store 组合
+  - 冗余计算/多样化检错模式优先级
+- `generate_single_testcase()` 没有使用 policy 返回的 synthesizer，导致生成流程语义上就是错的。
+
+### 8.5 编码核对样例
+
+- 使用 `clang -target aarch64-linux-gnu` 组装样例指令后，确认以下真实编码存在并值得纳入仓库基线：
+  - `add x0, x1, #1` -> `0x91000420`
+  - `sub x2, x3, #0x123` -> `0xd1048c62`
+  - `adr x8, label` -> `0x10000088`
+  - `adrp x9, label` -> `0x90000009`
+  - `csel x10, x11, x12, eq` -> `0x9a8c016a`
+  - `nop` -> `0xd503201f`
+  - `ret` -> `0xd65f03c0`
 | mp_epi | 生成EP (Execution Profile) |
 | mp_mpt2bin | MPT格式转二进制 |
 | mp_mpt2elf | MPT格式转ELF |

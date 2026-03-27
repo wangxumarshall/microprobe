@@ -22,6 +22,23 @@ DEFAULT_XML_DIR = Path(".codex_tmp/arm_a64_xml/xml")
 DEFAULT_INSTRUCTION_FILE = Path("targets/arm64/isa/armv8-common/instruction.yaml")
 
 
+def _safe_extractall(tf: tarfile.TarFile, destination: Path) -> None:
+    destination = destination.resolve()
+    for member in tf.getmembers():
+        if member.islnk() or member.issym():
+            raise ValueError(
+                f"Refusing to extract link member '{member.name}' from '{tf.name}'"
+            )
+
+        target = (destination / member.name).resolve()
+        if target != destination and destination not in target.parents:
+            raise ValueError(
+                f"Refusing to extract '{member.name}' outside '{destination}'"
+            )
+
+    tf.extractall(destination)
+
+
 def _download_official_xml(xml_dir: Path) -> Path:
     xml_dir.parent.mkdir(parents=True, exist_ok=True)
     archive = xml_dir.parent / "arm_a64.tar.gz"
@@ -31,7 +48,7 @@ def _download_official_xml(xml_dir: Path) -> Path:
     if not xml_dir.exists():
         print(f"[audit] extracting {archive}")
         with tarfile.open(archive, "r:gz") as tf:
-            tf.extractall(xml_dir.parent)
+            _safe_extractall(tf, xml_dir.parent)
         extracted = xml_dir.parent / "ISA_A64_xml_A_profile-2025-09_ASL1"
         if extracted.exists():
             extracted.rename(xml_dir)

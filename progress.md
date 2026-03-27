@@ -1,5 +1,51 @@
 # Microprobe ARM64移植进度日志
 
+## 会话: 2026-03-27
+
+### 任务概述
+围绕 ARM64/Kunpeng920 SDC fuzzing 主路径做闭环修复，并准备按仓库提交代码。
+
+### [当前] - ARM64 SDC Fuzzing主链修复与验证
+- ✅ ARM64 target import 修复完成
+- ✅ `Arm64ISA` helper 补齐到可支撑 policy/memory pass
+- ✅ ARM64 instruction 元数据补齐：branch / memory / privilege / trap
+- ✅ 通用 assembly 渲染器支持 `[...]` 风格内存操作数
+- ✅ `Instruction` 默认常量 operand 自动赋值
+- ✅ `SingleMemoryStreamPass` 所需的 ARM64 符号地址物化已打通（`ADRP + ADD :lo12:`）
+- ✅ `sdc_fuzzing_policy.py` 默认敏感序列改成 `FMA + LDP/STP + CAS/LSE` 交织
+- ✅ `sdc_detect.py` 最小策略可合成
+- ✅ `BareMetalDiffWrapper` 在绑定 benchmark 后可生成 digest 代码
+- ✅ `run_sdc_differential.py --help` 可运行
+
+**关键验证**:
+1. `import_definition('armv8_common-armv8_common-aarch64_linux_gcc')` 成功。
+2. `sdc_fuzzing_policy.policy(...).synthesize()` 成功，样例 metadata:
+   - `ace_score=0.5523809523809524`
+   - `ibr_score=1.0`
+   - `memory_pressure_score=0.625`
+   - `preferred_stride_bytes=8192`
+3. 默认前 8 条敏感种子样例：
+   - `FMADD_D_V0`
+   - `LDP_X_V0`
+   - `CASAL_X_V0`
+   - `FMADD_S_V0`
+   - `STP_X_V0`
+   - `CASA_X_V0`
+   - `FMSUB_D_V0`
+   - `CASL_X_V0`
+4. `set_register_to_address()` 现在可生成：
+   - `ADRP x9, BUF0+0x20`
+   - `ADD x9, x9, :lo12:BUF0+0x20`
+5. `BareMetalDiffWrapper` 生成检查通过：
+   - `sdc_benchmark_body` 存在
+   - `sdc_mix_bytes` 存在
+   - `end_main()` 中包含 `SDC_DIGEST=...`
+
+**当前遗留**:
+1. `pytest` 因本地缺少 `typeguard` 无法跑完整收敛。
+2. 根目录 `run_sdc_differential.py` / `sdc_vault.py` 还不在 git 仓库内。
+3. McPAT 仓库缺少内建 ARM64 gem5 样例输入，回归只能做到接口层复核。
+
 ## 会话: 2026-03-26
 
 ### 开始时间
@@ -11,6 +57,33 @@
 ---
 
 ## 进度记录
+
+### [15:10] - ARM64 ISA官方审计与硬化启动
+- ✅ 下载并解析 Arm 官方 A64 XML 机器可读规范
+- ✅ 建立当前 ARM64 指令覆盖基线
+- ✅ 识别 ARM64 helper/policy 直接依赖但缺失的关键指令
+- ✅ 验证部分代表性指令真实编码（clang AArch64 目标）
+- ✅ 新增仓库内可复用的 `a64_isa_audit.py` 审计工具
+- ✅ 改进 `sdc_fuzzing_generator.py` 的覆盖驱动序列生成与生成流程
+- ✅ 修复 Python 3.12 下 `imp` 模块兼容性问题
+- ✅ 通过新增工具/生成器单测
+- ✅ 确认 Power/RISC-V 目标导入未被兼容性修复破坏
+
+**关键发现**:
+1. ARM64 当前实现只有 `56` 个 instruction entries、`27` 个唯一助记符，和官方 A64 general/system 指令集规模差距很大。
+2. `isa.py` 依赖的 `MOV_X_V0`、`ADRP_X_V0`、`NOP_V0` 目前并未定义。
+3. `sdc_fuzzing_generator.py` 存在生成流程缺陷，没有正确使用 policy 返回的 synthesizer。
+4. 当前序列生成策略主要是随机采样，不利于提升指令覆盖率和 SDC 故障检出率。
+5. ARM64 目标当前还存在更底层的结构问题：
+   - `instruction_format.yaml` 中多种格式长度不是 32 bit，直接阻塞 ISA 导入
+   - `targets/arm64/uarch/armv8-common/microarchitecture.yaml` 不符合 microarchitecture schema
+   - `armv8-common-cortex-a53-aarch64_linux_gcc` 目标名不符合当前框架三段式解析规则
+
+**接下来**:
+1. 补齐 helper/policy 依赖的关键 ARM64 指令
+2. 扩展一批高价值整数/条件选择指令族
+3. 将 fuzzing 生成策略改成 coverage-driven + SDC-sensitive
+4. 重构 ARM64 ISA/uarch 目录，使目标定义真正可导入
 
 ### [10:00] - 项目初始化
 - ✅ 创建任务规划文档 (task_plan.md)
@@ -236,3 +309,4 @@ targets/arm64/
 - 2026-03-26 10:00: 创建进度文档
 - 2026-03-26 10:15: 开始架构分析
 - 2026-03-26 11:45: 完成初步分析，准备ARM64研究
+- 2026-03-26 18:xx: 恢复既有 ARM64 上下文，确认 `targets/arm64/` 已存在且与旧计划状态不一致，开始进行 ARM64 ISA 准确性/完备性审计

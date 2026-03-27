@@ -15,8 +15,8 @@ from microprobe.utils.typeguard_decorator import typeguard_testsuite
 class Arm64InstructionField(GenericInstructionField):
     """ARM64 Instruction Field implementation."""
     
-    def __init__(self, name, descr, size, **kwargs):
-        super(Arm64InstructionField, self).__init__(name, descr, size, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(Arm64InstructionField, self).__init__(*args, **kwargs)
     
     def __str__(self):
         return "Arm64InstructionField(%s)" % self.name

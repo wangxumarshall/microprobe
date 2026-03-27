@@ -1,0 +1,7 @@
+---
+- Name: data_cache
+  Description: Boolean indicating that the element is a data cache
+  Default: False
+  Values:
+    L1D: True
+    L2: True

@@ -23,7 +23,11 @@ import os
 
 # Third party modules
 import yaml
-from rxjson.Rx import Error, Factory  # @UnresolvedImport
+try:
+    from rxjson.Rx import Error, Factory  # @UnresolvedImport
+except ImportError:  # pragma: no cover - optional dependency
+    Error = None
+    Factory = None
 
 # Own modules
 from microprobe.exceptions import MicroprobeCacheError, \
@@ -99,6 +103,9 @@ def _create_yaml_schema(filename):
     :param filename:
 
     """
+    if Factory is None:
+        return None
+
     yaml_schema = _read_yaml(filename)
     rx_obj = Factory({"register_core_types": True})
 
@@ -150,6 +157,14 @@ def read_yaml(data_file, schema_file):
         return data
 
     schema = _create_yaml_schema(schema_file)
+
+    if schema is None:
+        LOG.warning(
+            "Optional dependency 'rxjson' is not installed. "
+            "Skipping schema validation for '%s'.", data_file
+        )
+        LOG.debug("End")
+        return data
 
     if not schema.check(data):
 

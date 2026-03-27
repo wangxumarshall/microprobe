@@ -1,4 +1,13 @@
 from collections import OrderedDict
+from pathlib import Path
+import sys
+
+PROJECT_MICROPROBE_ROOT = Path(__file__).resolve().parents[4]
+PROJECT_MICROPROBE_SRC = PROJECT_MICROPROBE_ROOT / "src"
+
+for extra_path in [PROJECT_MICROPROBE_SRC, PROJECT_MICROPROBE_ROOT]:
+    if str(extra_path) not in sys.path:
+        sys.path.insert(0, str(extra_path))
 
 from sdc_fuzzing_generator import InstructionPool
 

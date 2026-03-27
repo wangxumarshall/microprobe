@@ -28,7 +28,10 @@ from inspect import getmembers, getmodule, isfunction
 from typing import TYPE_CHECKING, List
 
 # Own modules
-from microprobe.exceptions import MicroprobeArchitectureDefinitionError
+from microprobe.exceptions import (
+    MicroprobeArchitectureDefinitionError,
+    MicroprobeYamlFormatError,
+)
 from microprobe.property import PropertyHolder, import_properties
 from microprobe.target.isa.instruction_field import GenericInstructionField
 from microprobe.target.isa.instruction_format import GenericInstructionFormat
@@ -65,6 +68,44 @@ __all__ = [
 
 # Functions
 @typeguard_testsuite
+def _is_instruction_definition_file(filename):
+    """Return True when *filename* matches the instruction-definition schema."""
+
+    try:
+        data = read_yaml(filename, SCHEMA)
+    except MicroprobeYamlFormatError:
+        return False
+
+    return data is not None
+
+
+@typeguard_testsuite
+def _instruction_extension_files(filename):
+    """Discover sibling instruction-extension YAMLs misfiled as properties."""
+
+    if not filename.endswith("instruction.yaml"):
+        return []
+
+    props_dir = filename[::-1].replace("lmay.noitcurtsni", "sporp_noitcurtsni", 1)[
+        ::-1
+    ]
+
+    if not os.path.isdir(props_dir):
+        return []
+
+    extension_files = []
+    for entry in sorted(os.listdir(props_dir)):
+        if entry.startswith(".") or not entry.endswith(".yaml"):
+            continue
+
+        candidate = os.path.join(props_dir, entry)
+        if _is_instruction_definition_file(candidate):
+            extension_files.append(candidate)
+
+    return extension_files
+
+
+@typeguard_testsuite
 def import_definition(cls, filenames, args):
     """
 
@@ -81,7 +122,12 @@ def import_definition(cls, filenames, args):
     defined_memory_operands = []
     instructions = {}
 
+    expanded_filenames = []
     for filename in filenames:
+        expanded_filenames.append(filename)
+        expanded_filenames.extend(_instruction_extension_files(filename))
+
+    for filename in expanded_filenames:
         instruction_data = read_yaml(filename, SCHEMA)
 
         if instruction_data is None:
@@ -161,7 +207,9 @@ def import_definition(cls, filenames, args):
             LOG.debug(instruction)
             instructions[name] = instruction
 
-    for filename in filenames:
+    for filename in expanded_filenames:
+        if _instruction_extension_files(filename):
+            continue
         import_properties(filename, instructions)
 
     LOG.debug("End")
@@ -1994,6 +2042,38 @@ class GenericInstructionType(InstructionType):
                     assembly_str = assembly_str.replace(
                         f",{field.name})",
                         f",{next_operand_value().representation})",
+                        1,
+                    )
+
+                elif assembly_str.find(f"[{field.name}]") >= 0:
+
+                    assembly_str = assembly_str.replace(
+                        f"[{field.name}]",
+                        f"[{next_operand_value().representation}]",
+                        1,
+                    )
+
+                elif assembly_str.find(f"[{field.name},") >= 0:
+
+                    assembly_str = assembly_str.replace(
+                        f"[{field.name},",
+                        f"[{next_operand_value().representation},",
+                        1,
+                    )
+
+                elif assembly_str.find(f",{field.name}]") >= 0:
+
+                    assembly_str = assembly_str.replace(
+                        f",{field.name}]",
+                        f",{next_operand_value().representation}]",
+                        1,
+                    )
+
+                elif assembly_str.find(f" {field.name}]") >= 0:
+
+                    assembly_str = assembly_str.replace(
+                        f" {field.name}]",
+                        f" {next_operand_value().representation}]",
                         1,
                     )
 

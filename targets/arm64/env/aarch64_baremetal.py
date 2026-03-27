@@ -16,7 +16,10 @@ __all__ = ["aarch64_baremetal"]
 
 class aarch64_baremetal(GenericEnvironment):
     """ARM64 baremetal environment."""
-    
+
+    DEFAULT_WRAPPER = "Assembly"
+    DIFF_WRAPPER = "BareMetalDiffWrapper"
+
     def __init__(self, isa):
         super(aarch64_baremetal, self).__init__(
             "aarch64_baremetal",
@@ -24,7 +27,9 @@ class aarch64_baremetal(GenericEnvironment):
             isa,
             little_endian=True
         )
-        self._default_wrapper = "AsmWrapper"
+        # ``AsmWrapper`` is not a registered wrapper class in this tree. Use
+        # the generic assembly wrapper until an ARM64-specific one is wired up.
+        self._default_wrapper = self.DEFAULT_WRAPPER
     
     @property
     def stack_pointer(self):
@@ -79,5 +84,10 @@ class aarch64_baremetal(GenericEnvironment):
         
         for idx in range(0, 32):
             rlist.append(self.target.registers[f'V{idx}'])
-        
+
         return rlist
+
+    @property
+    def preferred_diff_wrapper(self):
+        """Dedicated wrapper name to use for SDC differential runs."""
+        return self.DIFF_WRAPPER
