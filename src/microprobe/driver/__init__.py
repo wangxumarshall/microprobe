@@ -17,8 +17,18 @@
 
 from typing import List
 
+from microprobe.driver.genetic import (
+    EvolutionConfig,
+    EvolutionRecord,
+    SDCFuzzingGeneticDriver,
+)
+
 # Constants
-__all__: List[str] = []
+__all__: List[str] = [
+    "EvolutionConfig",
+    "EvolutionRecord",
+    "SDCFuzzingGeneticDriver",
+]
 
 # Functions
 

@@ -291,7 +291,7 @@
 - Name: opc
   Description: Operation Code
   Show: False
-  Size: 2
+  Size: 4
   IO: "?"
 
 - Name: opc2

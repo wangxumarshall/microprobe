@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cd /Users/wangxu/1-project/sdc-fuzzing && git add microprobe/targets/arm64/policies/sdc_fuzzing_policy.py && git commit -m \\\"$(cat <<'EOF'\\nFix SDC fuzzing policy to only generate gem5-com...",
+  "error": "Exit code 1\n下列路径根据您的一个 .gitignore 文件而被忽略：\nmicroprobe\n提示： 如果您确实想添加它们，请使用 -f 选项。\n提示： Disable this message with \"git config set advice.addIgnoredFile false\"",
+  "timestamp": "2026-04-02T01:02:43.682Z",
+  "retry_count": 1
+}

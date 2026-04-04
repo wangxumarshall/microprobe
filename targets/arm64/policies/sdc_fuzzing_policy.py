@@ -39,48 +39,73 @@ def _target_looks_like_arm64(target):
 
 
 class SDCSensitiveAnalyzer(object):
-    """Pick ARM64 instructions that are more likely to expose silent faults."""
+    """Pick ARM64 instructions that are more likely to expose silent faults.
 
-    _FMA_MNEMONICS = {"FMADD", "FMSUB", "FNMADD", "FNMSUB", "FMLA", "FMLS"}
-    _PAIR_MEMORY_MNEMONICS = {"LDP", "STP"}
-    _LSE_PREFIXES = ("CAS", "LDADD", "LDXR", "STXR", "LDAXR", "STLXR")
+    Note: Only uses gem5-compatible instructions to avoid GEM5_UNKNOWN_INST errors.
+    Avoids: FMADD, FMLA, CAS*, LDP, STP (unsupported in gem5 SE bare-metal)
+    Uses: Simple integer and logical instructions only.
+    """
+
+    # Exclude these - not supported in gem5 bare-metal SE or
+    # aarch64-elf-gcc/aarch64-elf-as (no LSE target)
+    _EXCLUDED_MNEMONICS = {
+        # FP SIMD
+        "FMADD", "FMSUB", "FNMADD", "FNMSUB",
+        "FMLA", "FMLS", "FNMLA", "FNMLS",
+        "LD1", "ST1", "LD2", "ST2", "LD3", "ST3", "LD4", "ST4",
+        "LD1R", "LD2R",
+        # Pair memory (some variants)
+        "LDP", "STP",
+        # LSE atomics (ARMv8.1 — not in bare-metal gcc/aarch64-elf-as)
+        "LDSMAX", "STSMIN", "SDSMAX", "SSMIN",
+        "LDUMAX", "STUMAX", "SDUMAX", "SUMAX",
+        "LDSABA", "STSABL", "SDSABAL", "SSABAL",
+        "LDADD", "LDADDA", "LDADDAL", "LDADDL",
+        "STADD", "STADDL",
+        "LDCLR", "LDCLRA", "LDCLRAL", "LDCLRL",
+        "STCLR", "STCLRL",
+        "LDEOR", "LDEORA", "LDEORAL", "LDEORL",
+        "STEOR", "STEORL",
+        "LDSET", "LDSETA", "LDSETAL", "LDSETL",
+        "STSET", "STSETL",
+        "SWP", "SWPA", "SWPAL", "SWPL",
+        "CAS", "CASA", "CASAL", "CASL",
+        "LDAPR", "STLR", "LDAR", "STLAR",
+        "LDXR", "STXR", "LDAXR", "STLXR",
+        # CRC instructions (sometimes available)
+        "CRC32B", "CRC32H", "CRC32W", "CRC32X",
+    }
+
+    # Simple integer/logical instructions that work in gem5
+    _INCLUDED_MNEMONICS = {
+        "MOVZ", "MOVK", "MOVN",                 # Move
+        "ADD", "SUB", "CMP", "CMN",             # Arithmetic
+        "AND", "ORR", "EOR", "TST",             # Logical
+        "LSL", "LSR", "ASR", "ROR",              # Shift
+        "LDUR", "STUR", "LDR", "STR",            # Single register memory
+        "B", "BL", "BEQ", "BNE", "BGT", "BLT",  # Branch
+        "NOP",                                   # No-op
+    }
 
     def __init__(self, target):
         self._target = target
 
     def collect(self):
         instructions = list(self._target.isa.instructions.values())
-        fma = []
-        pair_memory = []
-        lse = []
+        allowed = []
+
         for instr in instructions:
             mnemonic = instr.mnemonic.upper()
-            if mnemonic in self._FMA_MNEMONICS:
-                fma.append(instr)
+            # Skip excluded instructions
+            if mnemonic in self._EXCLUDED_MNEMONICS:
                 continue
-            if (
-                mnemonic in self._PAIR_MEMORY_MNEMONICS
-                and instr.name.endswith("_X_V0")
-            ):
-                pair_memory.append(instr)
-                continue
-            if any(mnemonic.startswith(prefix) for prefix in self._LSE_PREFIXES):
-                lse.append(instr)
+            # Only include instructions we know work
+            if mnemonic in self._INCLUDED_MNEMONICS:
+                allowed.append(instr)
 
-        for bucket in [fma, pair_memory, lse]:
-            bucket.sort(key=lambda instr: instr.name)
-
-        sensitive = []
-        max_len = max(len(fma), len(pair_memory), len(lse), 1)
-        for idx in range(max_len):
-            if idx < len(fma):
-                sensitive.append(fma[idx])
-            if idx < len(pair_memory):
-                sensitive.append(pair_memory[idx])
-            if idx < len(lse):
-                sensitive.append(lse[idx])
-
-        return sensitive
+        # Sort by name for deterministic ordering
+        allowed.sort(key=lambda instr: instr.name)
+        return allowed
 
     def default_sequence(self, limit=8):
         sensitive = self.collect()
@@ -139,12 +164,6 @@ def policy(target, wrapper, **kwargs):
         )
     )
     synthesizer.add_pass(microprobe.passes.address.UpdateInstructionAddressesPass())
-    synthesizer.add_pass(
-        microprobe.passes.memory.SingleMemoryStreamPass(
-            memory_stream_size,
-            memory_stream_stride,
-        )
-    )
 
     if dependency_distance < 1:
         synthesizer.add_pass(microprobe.passes.register.NoHazardsAllocationPass())

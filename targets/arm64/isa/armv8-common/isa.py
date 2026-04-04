@@ -163,17 +163,17 @@ class Arm64ISA(GenericISA):
             "GPR64",
             "SPR",
         }:
-            mov_ins = self.new_instruction("ADD_X_IMM_V0")
-            mov_ins.operands()[1].set_value(0)
-            mov_ins.operands()[2].set_value(value)
-            mov_ins.operands()[3].set_value(register)
+            mov_ins = self.new_instruction("ADD_X_REG_V0")
+            mov_ins.operands()[0].set_value(0)
+            mov_ins.operands()[1].set_value(value)
+            mov_ins.operands()[2].set_value(register)
             return [mov_ins]
 
         if register.type.name == "GPR32" and value.type.name == "GPR32":
-            mov_ins = self.new_instruction("ADD_X_IMM_V0")
-            mov_ins.operands()[1].set_value(0)
-            mov_ins.operands()[2].set_value(value)
-            mov_ins.operands()[3].set_value(register)
+            mov_ins = self.new_instruction("ADD_W_REG_V0")
+            mov_ins.operands()[0].set_value(0)
+            mov_ins.operands()[1].set_value(value)
+            mov_ins.operands()[2].set_value(register)
             return [mov_ins]
 
         if register.type.name == "SIMD_FP" and value.type.name == "SIMD_FP":
