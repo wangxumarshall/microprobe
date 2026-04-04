@@ -1,0 +1,52 @@
+{
+  "cli_version": "v0.5.0-dev-f46ed4f3",
+  "checkpoint_id": "518250989db5",
+  "session_id": "26b14e76-6331-4a92-8e07-fa32ad0b23f2",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-04T09:44:57.041031Z",
+  "branch": "master",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "sdc_offline_gen.py",
+    "src/microprobe/driver/__init__.py",
+    "src/microprobe/driver/genetic.py",
+    "targets/arm64/isa/armv8-common/instruction_field.yaml",
+    "targets/arm64/isa/armv8-common/isa.py",
+    "targets/arm64/policies/sdc_fuzzing_policy.py",
+    "targets/arm64/tests/targets/test_instruction_encoding.py",
+    "targets/generic/tools/.omc/state/idle-notif-cooldown.json",
+    "targets/generic/tools/.omc/state/last-tool-error.json",
+    "targets/generic/tools/arm64_stubs/inttypes.h",
+    "targets/generic/tools/arm64_stubs/stdint.h",
+    "targets/generic/tools/arm64_stubs/stdio.h",
+    "targets/generic/tools/arm64_stubs/stdlib.h",
+    "targets/generic/tools/arm64_stubs/string.h",
+    "targets/generic/tools/arm64_stubs/unistd.h",
+    "targets/generic/tools/baremetal.ld",
+    "targets/generic/tools/compile_baremetal.py",
+    "targets/generic/tools/mp_sdc_offline_gen.py",
+    "targets/generic/tools/sdc_vault.py"
+  ],
+  "agent": "Claude Code",
+  "model": "glm-5",
+  "turn_id": "07a6435f0f80",
+  "token_usage": {
+    "input_tokens": 142272,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 229690,
+    "output_tokens": 4890,
+    "api_call_count": 6
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-04T09:44:56.969616Z",
+    "agent_lines": 218,
+    "human_added": 1630,
+    "human_modified": 244,
+    "human_removed": 0,
+    "total_committed": 2092,
+    "agent_percentage": 10.420650095602294
+  }
+}
